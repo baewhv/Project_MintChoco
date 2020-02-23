@@ -5,16 +5,15 @@ using UnityEngine;
 public class Character : MonoBehaviour
 {
     public SpriteRenderer body;
-    [SerializeField] Sprite[] walk = null;
-    [SerializeField] Sprite[] talk = null;
-    [SerializeField] Sprite idle = null;
-
+    
     [SerializeField] Sprite[] emotion = null;
     [SerializeField] GameObject Weapon = null;
-
     [SerializeField] float walkSpeed = 10;
-    [SerializeField] float talkSpeed = 10;
     [SerializeField] Vector3 DefaultPosition = Vector3.zero;
+    Animator m_anim;
+    SpriteRenderer m_Mouth;
+    SpriteRenderer m_Eye;
+
 
     MicManager Mic;
 
@@ -24,13 +23,10 @@ public class Character : MonoBehaviour
     //bool isWalk = false;
     //bool isTalk = false;
     bool isDown;
-    bool isEmotion;
     bool canJump;
     bool canMove; 
     bool equipWeapon; 
 
-
-    float motionTime = 0.0f;
     Vector3 m_dir = Vector3.zero;
 
     Rigidbody m_rigidbody;
@@ -43,67 +39,49 @@ public class Character : MonoBehaviour
         canJump = true;
         equipWeapon = false;
         transform.position = DefaultPosition;
-        body.sprite = idle;
+        body.sprite = emotion[0];
         Weapon.SetActive(false);
+        m_Mouth = transform.Find("Mouth").GetComponent<SpriteRenderer>();
+        m_Eye = transform.Find("Eye").GetComponent<SpriteRenderer>();
+        m_rigidbody = GetComponent<Rigidbody>();
+        GameObject micGO = GameObject.Find("MicManager");
+        Mic = micGO.GetComponent<MicManager>();
+        m_anim = GetComponent<Animator>();
+
     }
 
     void Start()
     {
         initProperty();
-        GameObject micGO = GameObject.Find("MicManager");
-        Mic = micGO.GetComponent<MicManager>();
-        m_rigidbody = GetComponent<Rigidbody>();
+        StartBlink();
     }
 
-    void Walk(float value)
+    public void StartBlink()
     {
-        if(isEmotion)
+        StartCoroutine(EyeBlink());
+    }
+
+    public void ShowFace()
+    {
+        StartBlink();
+        m_Eye.gameObject.SetActive(true);
+    }
+    public void HideFace()
+    {
+        StopCoroutine(EyeBlink());
+        m_Eye.gameObject.SetActive(false);
+    }
+
+    IEnumerator EyeBlink()
+    {
+        while (true)
         {
-            return;
-        }
-        value *= walkSpeed;
-        switch ((int)value % walk.Length)
-        {
-            case 0:
-                body.sprite = walk[0];
-                break;
-            case 1:
-                body.sprite = walk[1];
-                break;
-            case 2:
-                body.sprite = walk[2];
-                break;
-            case 3:
-                body.sprite = walk[3];
-                break;
+            yield return new WaitForSeconds(Util.Rand(3, 5));
+            m_anim.SetTrigger("T_Blink"); 
         }
     }
 
-    void Talk(float value)
-    {
-        if(isEmotion)
-        {
-            return;
-        }
-        value *= talkSpeed;
-        switch ((int)value % talk.Length)
-        {
-            case 0:
-                body.sprite = talk[0];
-                break;
-            case 1:
-                body.sprite = talk[1];
-                break;
-        }
-    }
-    void SetIdle()
-    {
-        if (isEmotion)
-        {
-            return;
-        }
-        body.sprite = idle;
-    }
+    
     void Jump()
     {
         canJump = false;
@@ -122,113 +100,8 @@ public class Character : MonoBehaviour
             Weapon.SetActive(true);
         }
     }
-    void M_Input()
-    {
-        if (!canMove)
-        {
-            return;
-        }
 
-        if (Input.GetKey(KeyCode.LeftArrow))
-        {
-            //isWalk = true;
-            if (body.flipX)
-            {
-                Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
-                Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
-                Weapon.GetComponent<SpriteRenderer>().flipX = false;
-                body.flipX = false;
-            }
-            motionTime += Time.deltaTime;
-            m_dir = Vector3.left;
-            Walk(motionTime);
-
-        }
-        else if (Input.GetKeyUp(KeyCode.LeftArrow))
-        {
-            //isWalk = false;
-            motionTime = 0;
-            m_dir = Vector3.zero;
-            SetIdle();
-        }
-
-        if (Input.GetKey(KeyCode.RightArrow))
-        {
-            //isWalk = true;
-
-            if (!body.flipX)
-            {
-                Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
-                Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
-                Weapon.GetComponent<SpriteRenderer>().flipX = true;
-                body.flipX = true;
-            }
-            motionTime += Time.deltaTime;
-            m_dir = Vector3.right;
-            Walk(motionTime);
-        }
-        else if (Input.GetKeyUp(KeyCode.RightArrow))
-        {
-            //isWalk = false;
-            motionTime = 0;
-            m_dir = Vector3.zero;
-            SetIdle();
-        }
-
-        if (0 < Input.GetAxisRaw("Vertical") && canJump && m_rigidbody.velocity.y >= 0)
-        {
-            Jump();
-        }
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            SetWeapon();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-        {
-            body.sprite = emotion[0];
-            isEmotion = false;
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-        {
-            body.sprite = emotion[1];
-            isEmotion = true;
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-        {
-            body.sprite = emotion[2];
-            isEmotion = true;
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha4))
-        {
-            body.sprite = emotion[3];
-            isEmotion = true;
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha5))
-        {
-            body.sprite = emotion[4];
-            isEmotion = true;
-        }
-    }
-    void MicInput()
-    {
-        if (isEmotion)
-        {
-            return;
-        }
-        if (Mic.GetDecibels() > -110)
-        {
-            motionTime += Time.deltaTime;
-            Talk(motionTime);
-            Debug.Log(Mic.GetDecibels());
-        }
-        else
-        {
-            motionTime = 0;
-            SetIdle();
-        }
-    }
+    
 
     public void SetChromaKeyMode()
     {
@@ -246,6 +119,113 @@ public class Character : MonoBehaviour
         canMove = true;
         m_rigidbody.useGravity = true;
         transform.position = DefaultPosition;
+    }
+
+    void M_Input()
+    {
+        if (!canMove)
+        {
+            return;
+        }
+
+        if ( 1 == Input.GetAxisRaw("Horizontal") )
+        {
+            if (!body.flipX)
+            {
+                Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
+                Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
+                Weapon.GetComponent<SpriteRenderer>().flipX = true;
+                body.flipX = true;
+                m_Eye.gameObject.transform.localPosition = new Vector3(-m_Eye.gameObject.transform.localPosition.x, m_Eye.gameObject.transform.localPosition.y, 0.0f);
+                m_Eye.gameObject.GetComponent<SpriteRenderer>().flipX = true;
+                m_Mouth.gameObject.transform.localPosition = new Vector3(-m_Mouth.gameObject.transform.localPosition.x, m_Mouth.gameObject.transform.localPosition.y, 0.0f);
+                m_Mouth.flipX = true;
+            }
+            m_dir = Vector3.right;
+        }
+        else if(-1 == Input.GetAxisRaw("Horizontal"))
+        {
+            if (body.flipX)
+            {
+                Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
+                Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
+                Weapon.GetComponent<SpriteRenderer>().flipX = false;
+                body.flipX = false;
+                m_Eye.gameObject.transform.localPosition = new Vector3(-m_Eye.gameObject.transform.localPosition.x, m_Eye.gameObject.transform.localPosition.y, 0.0f);
+                m_Eye.gameObject.GetComponent<SpriteRenderer>().flipX = false;
+                m_Mouth.gameObject.transform.localPosition = new Vector3(-m_Mouth.gameObject.transform.localPosition.x, m_Mouth.gameObject.transform.localPosition.y, 0.0f);
+                m_Mouth.flipX = false;
+
+            }
+            m_dir = Vector3.left;
+        }
+        else
+        {
+            m_dir = Vector3.zero;
+        }
+
+        if (0 < Input.GetAxisRaw("Vertical") && canJump && m_rigidbody.velocity.y >= 0)
+        {
+            Jump();
+        }
+
+        if (Input.GetKeyDown(KeyCode.E))
+        {
+            SetWeapon();
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            body.sprite = emotion[0];
+            ShowFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            body.sprite = emotion[1];
+            HideFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            body.sprite = emotion[2];
+            HideFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha4))
+        {
+            body.sprite = emotion[3];
+            HideFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha5))
+        {
+            body.sprite = emotion[4];
+            HideFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha6))
+        {
+            body.sprite = emotion[5];
+            HideFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha7))
+        {
+            body.sprite = emotion[6];
+            HideFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha8))
+        {
+            body.sprite = emotion[7];
+            HideFace();
+        }
+        if (Input.GetKeyDown(KeyCode.Alpha9))
+        {
+            body.sprite = emotion[8];
+            HideFace();
+        }
+    }
+    void MicInput()
+    {
+        if (Mic.GetDecibels() > -100)
+        {
+            m_anim.SetTrigger("T_Mouth");
+        }
     }
 
 

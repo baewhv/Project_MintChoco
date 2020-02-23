@@ -9,7 +9,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     List<Present> m_presentsList = new List<Present>();
     GameObjectPool<Present> m_PresentsPool;
     GameObject m_presents;
-    [SerializeField] Transform dropPosition;
+    [SerializeField] Transform dropPosition = null;
 
     public void RemovePresents(Present present)
     {
@@ -58,7 +58,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             return presents;
         });
     }
-    private void OnDrawGizmos()
+    private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(new Vector3(dropPosition.position.x, dropPosition.position.y - dropPosition.localScale.y * 5), new Vector3(dropPosition.localScale.x, dropPosition.localScale.y * 10));
@@ -67,61 +67,28 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKey(KeyCode.LeftControl))
-        {
-            if (Input.GetKeyDown(KeyCode.Alpha1) || Input.GetKeyDown(KeyCode.Alpha6))
-            {
-                Debug.Log("1");
-                CreatePresents(1000);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha2))
-            {
-                Debug.Log("2");
-                CreatePresents(1000);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha3))
-            {
-                Debug.Log("3");
-                CreatePresents(1000);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha4))
-            {
-                Debug.Log("4");
-                CreatePresents(1000);
-            }
-            else if (Input.GetKeyDown(KeyCode.Alpha5))
-            {
-                Debug.Log("5");
-                CreatePresents(1000);
-            }
-        }
-        if (Input.GetKeyDown(KeyCode.Alpha6))
+ 
+        if (Input.GetKeyDown(KeyCode.Keypad1))
         {
             CreatePresents(1000);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha7))
+        else if (Input.GetKeyDown(KeyCode.Keypad2))
         {
             CreatePresents(5000);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha8))
+        else if (Input.GetKeyDown(KeyCode.Keypad3))
         {
             CreatePresents(10000);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha9))
+        else if (Input.GetKeyDown(KeyCode.Keypad4))
         {
             CreatePresents(50000);
         }
-        else if (Input.GetKeyDown(KeyCode.Alpha0))
+        else if (Input.GetKeyDown(KeyCode.Keypad5))
         {
             CreatePresents(100000);
         }
 
-#if UNITY_EDITOR
-        if (Input.GetKeyDown(KeyCode.End))
-        {
-
-        }
-#endif
 
     }
 }
