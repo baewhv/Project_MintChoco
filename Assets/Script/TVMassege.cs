@@ -29,6 +29,14 @@ public class TVMassege : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        if(Input.GetKeyDown(KeyCode.F5))
+        {
+            resetApplication();
+        }
+    }
+
+    public static void resetApplication()
+    {
+        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
 }

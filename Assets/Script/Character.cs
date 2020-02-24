@@ -84,6 +84,7 @@ public class Character : MonoBehaviour
     
     void Jump()
     {
+        
         canJump = false;
         m_rigidbody.AddForce(Vector3.up * 15f, ForceMode.Impulse);
     }
@@ -105,21 +106,40 @@ public class Character : MonoBehaviour
 
     public void SetChromaKeyMode()
     {
+        Debug.Log(canJump + " Set Chrome " + m_rigidbody.velocity);
         canMove = false;
+        canJump = false;
         equipWeapon = true;
         SetWeapon();
-        m_rigidbody.useGravity = false;
-        body.flipX = false;
+        if (body.flipX)
+        {
+            Weapon.GetComponent<SpriteRenderer>().flipX = false;
+            body.flipX = false;
+            m_Eye.gameObject.GetComponent<SpriteRenderer>().flipX = false;
+            m_Mouth.flipX = false;
+            SetFlip();
+        }
         body.sprite = emotion[0];
         m_dir = Vector3.zero;
+        m_rigidbody.useGravity = false;
+        m_rigidbody.velocity = Vector3.zero;
         transform.position = Vector3.zero;
     }
     public void DisableChromaKeyMode()
     {
         canMove = true;
+        canJump = true;
         m_rigidbody.useGravity = true;
         transform.position = DefaultPosition;
     }
+    void SetFlip()
+    {
+        Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
+        Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
+        m_Eye.gameObject.transform.localPosition = new Vector3(-m_Eye.gameObject.transform.localPosition.x, m_Eye.gameObject.transform.localPosition.y, 0.0f);
+        m_Mouth.gameObject.transform.localPosition = new Vector3(-m_Mouth.gameObject.transform.localPosition.x, m_Mouth.gameObject.transform.localPosition.y, 0.0f);
+    }
+
 
     void M_Input()
     {
@@ -132,30 +152,24 @@ public class Character : MonoBehaviour
         {
             if (!body.flipX)
             {
-                Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
-                Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
                 Weapon.GetComponent<SpriteRenderer>().flipX = true;
                 body.flipX = true;
-                m_Eye.gameObject.transform.localPosition = new Vector3(-m_Eye.gameObject.transform.localPosition.x, m_Eye.gameObject.transform.localPosition.y, 0.0f);
                 m_Eye.gameObject.GetComponent<SpriteRenderer>().flipX = true;
-                m_Mouth.gameObject.transform.localPosition = new Vector3(-m_Mouth.gameObject.transform.localPosition.x, m_Mouth.gameObject.transform.localPosition.y, 0.0f);
                 m_Mouth.flipX = true;
+                SetFlip();
             }
+
             m_dir = Vector3.right;
         }
         else if(-1 == Input.GetAxisRaw("Horizontal"))
         {
             if (body.flipX)
             {
-                Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
-                Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
                 Weapon.GetComponent<SpriteRenderer>().flipX = false;
                 body.flipX = false;
-                m_Eye.gameObject.transform.localPosition = new Vector3(-m_Eye.gameObject.transform.localPosition.x, m_Eye.gameObject.transform.localPosition.y, 0.0f);
                 m_Eye.gameObject.GetComponent<SpriteRenderer>().flipX = false;
-                m_Mouth.gameObject.transform.localPosition = new Vector3(-m_Mouth.gameObject.transform.localPosition.x, m_Mouth.gameObject.transform.localPosition.y, 0.0f);
                 m_Mouth.flipX = false;
-
+                SetFlip();
             }
             m_dir = Vector3.left;
         }
@@ -164,7 +178,7 @@ public class Character : MonoBehaviour
             m_dir = Vector3.zero;
         }
 
-        if (0 < Input.GetAxisRaw("Vertical") && canJump && m_rigidbody.velocity.y >= 0)
+        if (0 < Input.GetAxisRaw("Vertical") && canJump && m_rigidbody.velocity.y >= 0 && canMove && !Input.GetKeyDown(KeyCode.Semicolon))
         {
             Jump();
         }

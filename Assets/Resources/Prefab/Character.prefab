@@ -227,19 +227,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   body: {fileID: 5377638553497376719}
-  talk:
-  - {fileID: -5006209879577422294, guid: bb264bd8bbee66945bc680a6e605a24e, type: 3}
-  - {fileID: -3555851121098573540, guid: bb264bd8bbee66945bc680a6e605a24e, type: 3}
-  idle: {fileID: 21300000, guid: 4d71a9d3affe8254c911f7fe7eee4766, type: 3}
   emotion:
   - {fileID: 21300000, guid: 4d71a9d3affe8254c911f7fe7eee4766, type: 3}
+  - {fileID: 21300000, guid: d83ee22cb1109264d9b25cca04a027dc, type: 3}
+  - {fileID: 21300000, guid: 6b599865e3a7ba34995a695be521779b, type: 3}
+  - {fileID: 21300000, guid: 6d37b08132663584a96aed7515bcd866, type: 3}
+  - {fileID: 21300000, guid: 983a4b75701f2844b967fde85ffe0195, type: 3}
+  - {fileID: 21300000, guid: edcb3cc04e7a17741b84e30467734acc, type: 3}
   - {fileID: 21300000, guid: 3b802fb90d0e67e43a7cc1f1da23792c, type: 3}
   - {fileID: 21300000, guid: b3ae20cbfdef439429d3c7c68cbdcf2f, type: 3}
-  - {fileID: 21300000, guid: 6d37b08132663584a96aed7515bcd866, type: 3}
-  - {fileID: 21300000, guid: 6b599865e3a7ba34995a695be521779b, type: 3}
-  - {fileID: 21300000, guid: edcb3cc04e7a17741b84e30467734acc, type: 3}
-  - {fileID: 21300000, guid: d83ee22cb1109264d9b25cca04a027dc, type: 3}
-  - {fileID: 21300000, guid: 983a4b75701f2844b967fde85ffe0195, type: 3}
   Weapon: {fileID: 5377638554472550173}
   walkSpeed: 10
   DefaultPosition: {x: -3.43, y: -1.86, z: 0}

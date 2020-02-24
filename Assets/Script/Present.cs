@@ -16,10 +16,14 @@ public class Present : MonoBehaviour
         if (collision.tag.Equals("DeadLine"))
         {
             m_rigidbody.velocity = Vector3.zero;
+            m_rigidbody.angularVelocity = Vector3.zero;
             PresentsManager.Instance.RemovePresents(this);
         }
     }
-
+    public void SetExplosion(Vector3 CharacterV)
+    {
+        m_rigidbody.velocity = (transform.position - CharacterV) *10;
+    }
     public void SetSprite(int Value)
     {
         if(Value >= 100000)
@@ -46,14 +50,14 @@ public class Present : MonoBehaviour
         else if (Value >= 5000)
         {
             body.sprite = m_sprite[1];
-            m_collider.radius = 0.75f;
-            m_collider.height = 0.75f;
+            m_collider.radius = 0.5f;
+            m_collider.height = 0.5f;
         }
         else if (Value >= 1000)
         {
             body.sprite = m_sprite[0];
-            m_collider.radius = 0.66f;
-            m_collider.height = 0.66f;
+            m_collider.radius = 0.3f;
+            m_collider.height = 0.3f;
 
         }
         else

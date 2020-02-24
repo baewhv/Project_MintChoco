@@ -9,6 +9,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     List<Present> m_presentsList = new List<Present>();
     GameObjectPool<Present> m_PresentsPool;
     GameObject m_presents;
+    GameObject m_character;
     [SerializeField] Transform dropPosition = null;
 
     public void RemovePresents(Present present)
@@ -46,6 +47,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     override protected void OnStart()
     {
         base.OnStart();
+        m_character = GameObject.Find("Character");
         m_presents = Resources.Load("Prefab/Present") as GameObject;
         m_PresentsPool = new GameObjectPool<Present>(5, () =>
         {
@@ -87,6 +89,16 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         else if (Input.GetKeyDown(KeyCode.Keypad5))
         {
             CreatePresents(100000);
+        }
+        if(Input.GetKeyDown(KeyCode.P))
+        {
+            foreach(Present P in m_presentsList)
+            {
+                if(P.gameObject.activeSelf)
+                {
+                    P.SetExplosion(new Vector3(m_character.transform.position.x, -5f));
+                }
+            }
         }
 
 
