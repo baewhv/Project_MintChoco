@@ -41,8 +41,9 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
         ForeGroundObject = GameObject.Find("ForwardCanvas");
         PresentsManager = GameObject.Find("PresentsManager");
 
-    }
 
+    }
+    
     void Update()
     {
         if(Input.GetKeyDown(KeyCode.Semicolon))

@@ -106,7 +106,6 @@ public class Character : MonoBehaviour
 
     public void SetChromaKeyMode()
     {
-        Debug.Log(canJump + " Set Chrome " + m_rigidbody.velocity);
         canMove = false;
         canJump = false;
         equipWeapon = true;
@@ -228,11 +227,11 @@ public class Character : MonoBehaviour
             body.sprite = emotion[7];
             HideFace();
         }
-        if (Input.GetKeyDown(KeyCode.Alpha9))
-        {
-            body.sprite = emotion[8];
-            HideFace();
-        }
+        //if (Input.GetKeyDown(KeyCode.Alpha9))
+        //{
+        //    body.sprite = emotion[8];
+        //    HideFace();
+        //}
     }
     void MicInput()
     {

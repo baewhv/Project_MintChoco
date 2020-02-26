@@ -10,11 +10,11 @@ public class TVMassege : MonoBehaviour
 
 
 
-    public void setText(string message, int money)
+    public void SetText(string message, int money)
     {
         m_Text.text += message + "님 께서 " + money.ToString() + "원을 보냈습니다." + "\n";
     }
-    public void setText(string message)
+    public void SetText(string message)
     {
         m_Text.text += message + "\n";
     }
@@ -29,14 +29,8 @@ public class TVMassege : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.F5))
-        {
-            resetApplication();
-        }
+
     }
 
-    public static void resetApplication()
-    {
-        UnityEngine.SceneManagement.SceneManager.LoadScene(0);
-    }
+
 }

@@ -1,1 +1,1 @@
-C:\Users\BaeJeongMin\AppData\Roaming\Twippy\userdata
+{TwippyLogAddress}{C:\Users\UserName\AppData\Roaming\Twippy\userdata}
