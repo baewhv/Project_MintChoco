@@ -6,12 +6,17 @@ using UnityEngine.UI;
 public class OptionUI : MonoBehaviour
 {
     [SerializeField] Toggle settingToggle = null;
-    //[SerializeField] Toggle LogToggle = null;
-
     [SerializeField] GameObject settingUI = null;
-    GameObject m_optionPrefab = null;
+    [SerializeField] Toggle donateToggle = null;
+    [SerializeField] GameObject donateUI = null;
+    [SerializeField] Toggle furnitureToggle = null;
+    [SerializeField] GameObject furnitureUI = null;
+
+    GameObject m_optionPrefab_Pass = null;
     [SerializeField] VerticalLayoutGroup m_optionGrid = null;
     List<GameObject> optionList = new List<GameObject>();
+    List<GameObject> donateList = new List<GameObject>();
+    List<GameObject> furnitureList = new List<GameObject>();
     DataManager m_dataManager = null;
 
     void CreateOptions()
@@ -36,10 +41,44 @@ public class OptionUI : MonoBehaviour
             settingUI.SetActive(false);
         }
     }
+    public void ToggleDonateUI()
+    {
+        if (donateToggle.isOn)
+        {
+            donateUI.SetActive(true);
+            //if (optionList.Count == 0)
+            //{
+            //    CreateOptions();
+
+            //}
+            //SetOptions();
+        }
+        else
+        {
+            donateUI.SetActive(false);
+        }
+    }
+    public void ToggleFurnitureUI()
+    {
+        if (furnitureToggle.isOn)
+        {
+            furnitureUI.SetActive(true);
+            //if (optionList.Count == 0)
+            //{
+            //    CreateOptions();
+
+            //}
+            //SetOptions();
+        }
+        else
+        {
+            furnitureUI.SetActive(false);
+        }
+    }
 
     public void CreateOption_Password(string optionName, string optionKey, string name, string placeholder)
     {
-        var obj = Instantiate(m_optionPrefab) as GameObject;
+        var obj = Instantiate(m_optionPrefab_Pass) as GameObject;
         obj.transform.SetParent(m_optionGrid.transform);
         obj.transform.localScale = Vector3.one;
         obj.name = optionName;
@@ -47,6 +86,7 @@ public class OptionUI : MonoBehaviour
         //obj.GetComponent<OptionKey>().SetKey(optionKey);
         optionList.Add(obj);
     }
+
 
     void SetOptions()
     {
@@ -66,7 +106,7 @@ public class OptionUI : MonoBehaviour
 
     void Awake()
     {
-        m_optionPrefab = Resources.Load("Prefab/UI/OptionPanel_Password") as GameObject;
+        m_optionPrefab_Pass = Resources.Load("Prefab/UI/OptionPanel_Password") as GameObject;
         m_dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
     }
     private void Start()

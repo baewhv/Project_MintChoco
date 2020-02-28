@@ -28,8 +28,20 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
 
     void CreateDefaultData()
     {
-        m_Data.Add("TwippyLogAddress", @"C\users");
+        CheckData("TwippyLogAddress", @"C\users");
+        CheckData("TwippyLogAddress", @"C\users");
+        CheckData("TwippyLogAddress", @"C\users");
+        CheckData("TwippyLogAddress", @"C\users");
+        CheckData("TwippyLogAddress", @"C\users");
         SaveDatas();
+    }
+
+    void CheckData(string key, string value)
+    {
+        if (!m_Data.ContainsKey(key))
+        {
+            m_Data.Add(key, value);
+        }
     }
 
     void WriteData(string strData)
@@ -48,16 +60,12 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         }
         StreamReader sr = new StreamReader(Application.persistentDataPath + "/Config.txt");
         string[] lines = sr.ReadToEnd().Split('\n');
-        Debug.Log("줄 개수를 읽슴니다" + lines.Length);
         for (int i = 0; i < lines.Length; i++)
         {
-            if (lines[i] != null) 
+            
+            if (lines[i].Length <= 1) 
             {
-                Debug.Log("빈 값입니다." + lines[i]);
-            }
-            if (lines[i][0] != '{') 
-            {
-                break;
+                continue;
             }
             string[] cutString = lines[i].Split('}');
             string keyS = cutString[0].Substring(1, cutString[0].Length - 1);
