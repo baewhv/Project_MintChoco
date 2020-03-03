@@ -5,23 +5,37 @@ using UnityEngine.UI;
 
 public class OptionUI : MonoBehaviour
 {
+    [SerializeField] Toggle logToggle = null;
+    [SerializeField] GameObject logUI = null;
+
     [SerializeField] Toggle settingToggle = null;
     [SerializeField] GameObject settingUI = null;
-    [SerializeField] Toggle donateToggle = null;
-    [SerializeField] GameObject donateUI = null;
-    [SerializeField] Toggle furnitureToggle = null;
-    [SerializeField] GameObject furnitureUI = null;
-
+    List<GameObject> optionList = new List<GameObject>();
     GameObject m_optionPrefab_Pass = null;
     [SerializeField] VerticalLayoutGroup m_optionGrid = null;
-    List<GameObject> optionList = new List<GameObject>();
+
+    [SerializeField] Toggle donateToggle = null;
+    [SerializeField] GameObject donateUI = null;
     List<GameObject> donateList = new List<GameObject>();
-    List<GameObject> furnitureList = new List<GameObject>();
+
+    [SerializeField] Toggle furnitureToggle = null;
+    [SerializeField] FurnitureUI furnitureUI = null;
+
+    [SerializeField] Toggle emoticonToggle = null;
+    [SerializeField] EmoticonUI emoticonUI = null;
+
+    [SerializeField] LogUI m_LogUI = null;
     DataManager m_dataManager = null;
+
+    public LogUI SendTVPanel()
+    {
+        return m_LogUI;
+    }
 
     void CreateOptions()
     {
         CreateOption_Password("Option_TwippyAddress", "TwippyLogAddress", "트위피 로그파일 경로", "주소를 입력해 주세요.");
+        
     }
 
     public void ToggleSettingUI()
@@ -62,17 +76,25 @@ public class OptionUI : MonoBehaviour
     {
         if (furnitureToggle.isOn)
         {
-            furnitureUI.SetActive(true);
-            //if (optionList.Count == 0)
-            //{
-            //    CreateOptions();
-
-            //}
-            //SetOptions();
+            furnitureUI.gameObject.SetActive(true);
+            var furniture = furnitureUI.GetComponent<FurnitureUI>();
+            furniture.SetFurniturePannel();
+            furniture.CreateFurniture();
         }
         else
         {
-            furnitureUI.SetActive(false);
+            furnitureUI.gameObject.SetActive(false);
+        }
+    }
+    public void ToggleEmoticonUI()
+    {
+        if (emoticonToggle.isOn)
+        {
+            emoticonUI.gameObject.SetActive(true);
+        }
+        else
+        {
+            emoticonUI.gameObject.SetActive(false);
         }
     }
 
@@ -83,7 +105,6 @@ public class OptionUI : MonoBehaviour
         obj.transform.localScale = Vector3.one;
         obj.name = optionName;
         obj.GetComponent<OptionPanel_Password>().SetPanel(optionKey, name, placeholder);
-        //obj.GetComponent<OptionKey>().SetKey(optionKey);
         optionList.Add(obj);
     }
 
@@ -101,9 +122,19 @@ public class OptionUI : MonoBehaviour
         {
             optionList[i].SendMessage("SaveData");
         }
-        m_dataManager.SaveDatas();
+        m_dataManager.SaveDatas(m_dataManager.m_OptionData, m_dataManager.optionConfigTXT);
     }
+    public void DestroyOptions()
+    {
+        for(int i = 0; i < optionList.Count; i++)
+        {
+            Destroy(optionList[i]);
+        }
+        furnitureUI.ClearList();
+        optionList.Clear();
+        logToggle.isOn = true;
 
+    }
     void Awake()
     {
         m_optionPrefab_Pass = Resources.Load("Prefab/UI/OptionPanel_Password") as GameObject;
@@ -111,8 +142,19 @@ public class OptionUI : MonoBehaviour
     }
     private void Start()
     {
-
+        SetDefaultPannel();
     }
+    public void SetDefaultPannel()
+    {
+        logUI.SetActive(true);
+        settingUI.SetActive(false);
+        donateUI.SetActive(false);
+        furnitureUI.gameObject.SetActive(false);
+        emoticonUI.gameObject.SetActive(false);
+        gameObject.SetActive(false);
+    }
+
+    
 
     // Update is called once per frame
     void Update()

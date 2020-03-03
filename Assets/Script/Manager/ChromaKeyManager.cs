@@ -44,11 +44,4 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
 
     }
     
-    void Update()
-    {
-        if(Input.GetKeyDown(KeyCode.Semicolon))
-        {
-            SetChromaKeyMode();
-        }
-    }
 }

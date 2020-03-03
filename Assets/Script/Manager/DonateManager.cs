@@ -14,9 +14,14 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
     bool canDonate = false;
     PresentsManager m_presentManger;
     DataManager dataManager;
-    [SerializeField] TVMassege m_massege = null;
+    LogUI m_massege = null;
 
     
+    public void getTVMessage(LogUI obj)
+    {
+        m_massege = obj;
+    }
+
     int ReadSessionDonationCount()//현재 세션에서 받은 도네 횟수 카운트.
     {
         FileInfo file = new FileInfo(sessionDonationCountTextRocation);
@@ -136,7 +141,7 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
         base.OnStart();
         m_presentManger = GameObject.Find("PresentsManager").GetComponent<PresentsManager>();
         dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
-        string path = dataManager.GetValues("TwippyLogAddress");
+        string path = dataManager.GetValues(dataManager.m_OptionData, "TwippyLogAddress");
         sessionDonationCountTextRocation = path + @"\session_donation_count.txt";
         recentDonatorsTextRocation = path + @"\most_recent_donators.txt";
         if(CheckConfigFolder())

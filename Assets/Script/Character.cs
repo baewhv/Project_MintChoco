@@ -25,7 +25,8 @@ public class Character : MonoBehaviour
     bool isDown;
     bool canJump;
     bool canMove; 
-    bool equipWeapon; 
+    bool equipWeapon;
+    bool canEmoticon;
 
     Vector3 m_dir = Vector3.zero;
 
@@ -37,6 +38,7 @@ public class Character : MonoBehaviour
         //isTalk = false;
         canMove = true;
         canJump = true;
+        canEmoticon = true;
         equipWeapon = false;
         transform.position = DefaultPosition;
         body.sprite = emotion[0];
@@ -102,7 +104,19 @@ public class Character : MonoBehaviour
         }
     }
 
-    
+
+    public void StopMovement()
+    {
+        canMove = false;
+        canJump = false;
+        canEmoticon = false;
+    }
+    public void ReplayMovement()
+    {
+        canMove = true;
+        canJump = true;
+        canEmoticon = true;
+    }
 
     public void SetChromaKeyMode()
     {
@@ -118,7 +132,6 @@ public class Character : MonoBehaviour
             m_Mouth.flipX = false;
             SetFlip();
         }
-        body.sprite = emotion[0];
         m_dir = Vector3.zero;
         m_rigidbody.useGravity = false;
         m_rigidbody.velocity = Vector3.zero;
@@ -126,13 +139,13 @@ public class Character : MonoBehaviour
     }
     public void DisableChromaKeyMode()
     {
-        canMove = true;
-        canJump = true;
+        ReplayMovement();
         m_rigidbody.useGravity = true;
         transform.position = DefaultPosition;
     }
     void SetFlip()
     {
+        
         Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
         Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
         m_Eye.gameObject.transform.localPosition = new Vector3(-m_Eye.gameObject.transform.localPosition.x, m_Eye.gameObject.transform.localPosition.y, 0.0f);
@@ -187,6 +200,13 @@ public class Character : MonoBehaviour
             SetWeapon();
         }
 
+    }
+    void M_EmoticonInput()
+    {
+        if(!canEmoticon)
+        {
+            return;
+        }
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             body.sprite = emotion[0];
@@ -227,12 +247,8 @@ public class Character : MonoBehaviour
             body.sprite = emotion[7];
             HideFace();
         }
-        //if (Input.GetKeyDown(KeyCode.Alpha9))
-        //{
-        //    body.sprite = emotion[8];
-        //    HideFace();
-        //}
     }
+
     void MicInput()
     {
         if (Mic.GetDecibels() > -100)
@@ -256,6 +272,7 @@ public class Character : MonoBehaviour
     void Update()
     {
         M_Input();
+        M_EmoticonInput();
         MicInput();
         if (!canJump)
         {

@@ -11,7 +11,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     GameObject m_presents;
     GameObject m_character;
     [SerializeField] Transform dropPosition = null;
-
+    public bool testDropPresent = true;
     public void RemovePresents(Present present)
     {
         if(m_presentsList.Remove(present))
@@ -69,34 +69,36 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     // Update is called once per frame
     void Update()
     {
- 
-        if (Input.GetKeyDown(KeyCode.Keypad1))
+        if (testDropPresent)
         {
-            CreatePresents(1000);
-        }
-        else if (Input.GetKeyDown(KeyCode.Keypad2))
-        {
-            CreatePresents(5000);
-        }
-        else if (Input.GetKeyDown(KeyCode.Keypad3))
-        {
-            CreatePresents(10000);
-        }
-        else if (Input.GetKeyDown(KeyCode.Keypad4))
-        {
-            CreatePresents(50000);
-        }
-        else if (Input.GetKeyDown(KeyCode.Keypad5))
-        {
-            CreatePresents(100000);
-        }
-        if(Input.GetKeyDown(KeyCode.P))
-        {
-            foreach(Present P in m_presentsList)
+            if (Input.GetKeyDown(KeyCode.Keypad1))
             {
-                if(P.gameObject.activeSelf)
+                CreatePresents(1000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad2))
+            {
+                CreatePresents(5000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad3))
+            {
+                CreatePresents(10000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad4))
+            {
+                CreatePresents(50000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad5))
+            {
+                CreatePresents(100000);
+            }
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                foreach (Present P in m_presentsList)
                 {
-                    P.SetExplosion(new Vector3(m_character.transform.position.x, -5f));
+                    if (P.gameObject.activeSelf)
+                    {
+                        P.SetExplosion(new Vector3(m_character.transform.position.x, -5f));
+                    }
                 }
             }
         }

@@ -4,11 +4,9 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class TVMassege : MonoBehaviour
+public class LogUI : MonoBehaviour
 {
     [SerializeField] Text m_Text = null;
-
-
 
     public void SetText(string message, int money)
     {

@@ -24,15 +24,16 @@ public class OptionPanel_Password : MonoBehaviour
     public void SetData()
     {
         DataManager DM = GameObject.Find("DataManager").GetComponent<DataManager>();
-        Debug.Log(KeyValue);
-        inputText.text = DM.GetValues(KeyValue);
+        //Debug.Log(KeyValue);
+        inputText.text = DM.GetValues(DM.m_OptionData, KeyValue);
     }
 
     public void SaveData()
     {
         DataManager DM = GameObject.Find("DataManager").GetComponent<DataManager>();
         Debug.Log(KeyValue);
-        DM.SaveValues(KeyValue, inputText.text);
+        ;
+        DM.SaveValues(DM.m_OptionData, KeyValue, inputText.text);
     }
 
     public void SetPanel(string optionKey, string nameT, string placeholderT = "경로를 입력해주세요.")
@@ -40,6 +41,5 @@ public class OptionPanel_Password : MonoBehaviour
         KeyValue = optionKey;
         nameText.text = nameT;
         placeholderText.text = placeholderT;
-        //데이터 매니저를 만들어 데이터를 로딩.
     }
 }
