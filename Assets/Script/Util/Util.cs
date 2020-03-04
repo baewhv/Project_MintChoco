@@ -78,6 +78,42 @@ public class Util : MonoBehaviour {
         return default(T);
     }
 
+    public static bool ParseDictionary(string str, out Dictionary<string, string> Dic)
+    {
+        Dictionary<string, string> _Dic = new Dictionary<string, string>();
+        string[] data = str.Split('&');
+
+        if (data.Length <= 1)
+        {
+            Dic = null;
+            return false;
+        }
+
+        for(int i = 0; i < data.Length; i++)
+        {
+            if(data[i].Length <= 1)
+            {
+                continue;
+            }
+            string[] splitData = data[i].Split(':');
+            _Dic.Add(splitData[0], splitData[1]);
+        }
+        Dic = _Dic;
+        return true;
+    }
+
+    public static bool PackingDictionary(Dictionary<string, string> Dic, out string str )
+    {
+        string data = "";
+        foreach (KeyValuePair<string, string> pair in Dic)
+        {
+            data += pair.Key + ":" + pair.Value + "&";
+        }
+        data = data.Substring(0, data.Length - 1);
+        str = data;
+        return true;
+    }
+
     //public static Vector2 shortcut(GameObject a, Transform b)   //점과 선 사이 가장 가까운 길이 구하기.
     //{
     //    float x_1 = a.transform.position.x;

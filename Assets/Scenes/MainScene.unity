@@ -695,6 +695,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   optionConfigTXT: /Config.txt
+  otherConfigTXT: \ETC.txt
   furnitureConfigTXT: /Config_furniture.txt
 --- !u!4 &771069146
 Transform:

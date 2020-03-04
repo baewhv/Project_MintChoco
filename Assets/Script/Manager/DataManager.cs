@@ -8,14 +8,18 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
 {
     public Dictionary<string, string> m_OptionData = new Dictionary<string, string>();
     public Dictionary<string, string> m_FurnitureData = new Dictionary<string, string>();
+    public Dictionary<string, string> m_OtherData = new Dictionary<string, string>();
     public string optionConfigTXT = @"\Config.txt";
+    public string otherConfigTXT = @"\ETC.txt";
     public string furnitureConfigTXT = @"\Config_furniture.txt";
     LogUI m_massege;
 
     public void CreateDefaultData()
     {
-        CheckData(m_OptionData, "TwippyLogAddress", @"C\users");
+        CheckData(m_OptionData, "TwippyLogAddress", @"C:\Users\YourName\AppData\Roaming\Twippy\userdata");
         SaveDatas(m_OptionData, optionConfigTXT);
+        CheckData(m_OtherData, "MicMinValue", "OptionCategory:Mic&Value:40");
+        SaveDatas(m_OtherData, otherConfigTXT);
 
         CheckData(m_FurnitureData, "Furniture_Background", "Background&0&0&1920&1080&false&0&0&0&1920&1080&false&0&배경&0");
         CheckData(m_FurnitureData, "Furniture_TV", "TV&553&280&775&474&false&1&553&280&775&474&false&1&모니터&0");
@@ -50,7 +54,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
 
     void ReadData(Dictionary<string, string> data, string saveTXT)
     {
-        if (!File.Exists(Application.persistentDataPath + saveTXT))    //저장된 컨픽 파일이 있다면
+        if (!File.Exists(Application.persistentDataPath + saveTXT))    //저장된 컨픽 파일이 없다면
         {
             return;
         }
@@ -58,7 +62,6 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         string[] lines = sr.ReadToEnd().Split('\n');
         for (int i = 0; i < lines.Length; i++)
         {
-            
             if (lines[i].Length <= 1) 
             {
                 continue;
@@ -159,7 +162,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
 
         return spr;
     }
-    public bool CopySprite(string fileName)
+    public bool CopySprite(string fileName) //이미지 관련 - 스프라이트 복사
     {
         if (!Directory.Exists(Application.persistentDataPath + "/Image"))
         {
@@ -172,7 +175,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         File.Copy(Application.streamingAssetsPath + "/Image/" + fileName + ".png", Application.persistentDataPath + "/Image/" + fileName + ".png", false);
         return true;
     }
-    public bool DeleteSprite(string fileName)
+    public bool DeleteSprite(string fileName)//이미지 관련 - 스프라이트 제거
     {
         if (File.Exists(Application.persistentDataPath + fileName + ".png"))
         {
@@ -188,6 +191,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         base.OnAwake();
         ReadData(m_OptionData, optionConfigTXT);
         ReadData(m_FurnitureData, furnitureConfigTXT);
+        ReadData(m_OtherData, otherConfigTXT);
 
         CreateDefaultData();
     }

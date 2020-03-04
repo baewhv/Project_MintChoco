@@ -7,7 +7,39 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
     public static float MicLoudness;
     public static float MicLoudnessinDecibels;
 
+    float minValue;
+    Dictionary<string, string> MicData;
+
     private string _device;
+
+    public float GetMinValue()
+    {
+        return minValue;
+    }
+
+    public void SetMinValue(float min)
+    {
+        minValue = min;
+    }
+
+    public void SaveData()
+    {
+        MicData["Value"] = GetMinValue().ToString();
+        string strDatas;
+        Util.PackingDictionary(MicData, out strDatas);
+        Debug.Log(strDatas);
+        var dm = GameObject.Find("DataManager").GetComponent<DataManager>();
+        dm.SaveValues(dm.m_OtherData, "MicMinValue", strDatas);
+        dm.SaveDatas(dm.m_OtherData,dm.otherConfigTXT);
+    }
+    void ParseData()
+    {
+        var dm = GameObject.Find("DataManager").GetComponent<DataManager>();
+        if (Util.ParseDictionary(dm.GetValues(dm.m_OtherData, "MicMinValue"), out MicData))
+        {
+            SetMinValue(float.Parse(MicData["Value"]));
+        }
+    }
 
     //mic initialization
     public void InitMic()
@@ -109,10 +141,9 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
 
     public float GetDecibels()
     {
+        float db = ((Mathf.Log10(Mathf.Abs(MicLoudness)) + 9) / 9) * 100;
 
-        float db = 20 * Mathf.Log10(Mathf.Abs(MicLoudness));
-
-        return db;
+        return db ;
     }
 
 
@@ -133,7 +164,13 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         //_isInitialized = true;
     }
 
+    override protected void OnStart()
+    {
+        base.OnStart();
+        ParseData();
+    }
 
+    
 
     void OnDestroy()
     {

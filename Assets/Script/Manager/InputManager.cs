@@ -21,7 +21,13 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     Character character;
     [SerializeField] GameObject SpotLight = null;
     ChromaKeyManager m_ChromaKeyManager;
-    // Start is called before the first frame update
+    PresentsManager m_PresentsManger;
+    bool canSpotLight = true;
+
+    void GetEmoticonInput()
+    {
+
+    }
 
     public void SetOptionUI(GameObject obj)
     {
@@ -35,43 +41,56 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         ResetKey = KeyCode.F5;
         LightKey = KeyCode.L;
         CromakeyMode = KeyCode.Semicolon;
+        GetEmoticonInput();
         SpotLight.SetActive(false);
         character = GameObject.Find("Character").GetComponent<Character>();
         m_ChromaKeyManager = GameObject.Find("ChromakeyManager").GetComponent<ChromaKeyManager>();
+        m_PresentsManger = GameObject.Find("PresentsManager").GetComponent<PresentsManager>();
     }
 
     public static void ResetApplication()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
+
+    void CloseOption()
+    {
+        optionUI.GetComponent<OptionUI>().DestroyOptions();
+        optionUI.SetActive(false);
+
+        character.ReplayMovement();
+        SpotLight.SetActive(false);
+        m_PresentsManger.testDropPresent = true;
+    }
+
+    void OpenOption()
+    {
+        optionUI.GetComponent<OptionUI>().SetDefaultPannel();
+        optionUI.SetActive(true);
+
+        character.StopMovement();
+        m_PresentsManger.testDropPresent = false;
+    }
+
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(OptionKey))
+        if (Input.GetKeyDown(OptionKey) && !m_ChromaKeyManager.GetisHide())
         {
             if (optionUI.activeSelf)
             {
-                optionUI.GetComponent<OptionUI>().DestroyOptions();
-                optionUI.SetActive(false);
-                
-                character.ReplayMovement();
-                SpotLight.SetActive(false);
-                GameObject.Find("PresentsManager").GetComponent<PresentsManager>().testDropPresent = true;
+                CloseOption();
             }
             else
             {
-                optionUI.GetComponent<OptionUI>().SetDefaultPannel(); 
-                optionUI.SetActive(true);
-
-                character.StopMovement();
-                GameObject.Find("PresentsManager").GetComponent<PresentsManager>().testDropPresent = false;
+                OpenOption();
             }
         }
         if (Input.GetKeyDown(ResetKey))
         {
             ResetApplication();
         }
-        if (Input.GetKeyDown(LightKey) && !optionUI.activeSelf)
+        if (Input.GetKeyDown(LightKey) && !optionUI.activeSelf && canSpotLight)
         {
             if (SpotLight.activeSelf)
             {
@@ -84,8 +103,17 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         }
         if (Input.GetKeyDown(CromakeyMode))
         {
-            
             m_ChromaKeyManager.SetChromaKeyMode();
+            if(m_ChromaKeyManager.GetisHide())
+            {
+                CloseOption();
+                canSpotLight = false;
+                SpotLight.SetActive(false);
+            }
+            else
+            {
+                canSpotLight = true;
+            }
         }
     }
 }

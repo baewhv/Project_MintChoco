@@ -73,7 +73,7 @@ public class FurnitureObject : MonoBehaviour
             defaultHeight.ToString() + and +
             defaultOrder.ToString() + and +
             defaultSort.ToString() + and +
-            name + and +
+            m_objName + and +
             GetSpecific().ToString();
     }
 }

@@ -6,7 +6,7 @@ using UnityEngine.UI;
 public class OptionUI : MonoBehaviour
 {
     [SerializeField] Toggle logToggle = null;
-    [SerializeField] GameObject logUI = null;
+    [SerializeField] LogUI logUI = null;
 
     [SerializeField] Toggle settingToggle = null;
     [SerializeField] GameObject settingUI = null;
@@ -24,18 +24,24 @@ public class OptionUI : MonoBehaviour
     [SerializeField] Toggle emoticonToggle = null;
     [SerializeField] EmoticonUI emoticonUI = null;
 
-    [SerializeField] LogUI m_LogUI = null;
+    [SerializeField] Toggle micToggle = null;
+    [SerializeField] MicUI micUI = null;
+    
+
+    
     DataManager m_dataManager = null;
 
     public LogUI SendTVPanel()
     {
-        return m_LogUI;
+        return logUI;
     }
 
     void CreateOptions()
     {
-        CreateOption_Password("Option_TwippyAddress", "TwippyLogAddress", "트위피 로그파일 경로", "주소를 입력해 주세요.");
-        
+        for(int i = 0; i < m_dataManager.m_OptionData.Count; i++)
+        {
+            CreateOption_Password("Option_TwippyAddress", "TwippyLogAddress", "트위피 로그파일 경로", "주소를 입력해 주세요.");
+        }
     }
 
     public void ToggleSettingUI()
@@ -77,9 +83,8 @@ public class OptionUI : MonoBehaviour
         if (furnitureToggle.isOn)
         {
             furnitureUI.gameObject.SetActive(true);
-            var furniture = furnitureUI.GetComponent<FurnitureUI>();
-            furniture.SetFurniturePannel();
-            furniture.CreateFurniture();
+            furnitureUI.SetFurniturePannel();
+            furnitureUI.CreateFurniture();
         }
         else
         {
@@ -91,10 +96,24 @@ public class OptionUI : MonoBehaviour
         if (emoticonToggle.isOn)
         {
             emoticonUI.gameObject.SetActive(true);
+            emoticonUI.SetPanel();
         }
         else
         {
             emoticonUI.gameObject.SetActive(false);
+        }
+    }
+    public void ToggleMicUI()
+    {
+        if (micToggle.isOn)
+        {
+            micUI.gameObject.SetActive(true);
+            micUI.SetPannel();
+        }
+        else
+        {
+            micUI.OutPannel();
+            micUI.gameObject.SetActive(false);
         }
     }
 
@@ -146,11 +165,12 @@ public class OptionUI : MonoBehaviour
     }
     public void SetDefaultPannel()
     {
-        logUI.SetActive(true);
+        logUI.gameObject.SetActive(true);
         settingUI.SetActive(false);
         donateUI.SetActive(false);
         furnitureUI.gameObject.SetActive(false);
         emoticonUI.gameObject.SetActive(false);
+        micUI.gameObject.SetActive(false);
         gameObject.SetActive(false);
     }
 

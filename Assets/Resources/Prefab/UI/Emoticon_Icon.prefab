@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 8656627743427498991}
   - component: {fileID: 4427106567379682555}
   - component: {fileID: 4302761492916147079}
-  - component: {fileID: 6928906491992907369}
   m_Layer: 5
   m_Name: Emoticon_Icon
   m_TagString: Untagged
@@ -35,8 +34,8 @@ RectTransform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 1}
-  m_AnchorMax: {x: 0, y: 1}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -91,20 +90,6 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
---- !u!114 &6928906491992907369
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4209465010228586413}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 37dd08f3aa4a7f14a965cf2b7bf0820a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Icon: {fileID: 3669935807084529971}
-  LinkedObject: {fileID: 0}
 --- !u!1 &5516311765296219238
 GameObject:
   m_ObjectHideFlags: 0
@@ -163,12 +148,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.9433962, g: 0.87664646, b: 0.87664646, a: 1}
+  m_Color: {r: 0.8784314, g: 0.9430776, b: 0.94509804, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: bafc1e5ccde1813448ebe8aa6d4eb0d9, type: 3}
+  m_Sprite: {fileID: -7560672052990161656, guid: 17299d0f2d7354945ac05d64f081df5d,
+    type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1

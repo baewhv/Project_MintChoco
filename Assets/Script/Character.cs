@@ -14,7 +14,6 @@ public class Character : MonoBehaviour
     SpriteRenderer m_Mouth;
     SpriteRenderer m_Eye;
 
-
     MicManager Mic;
 
     float LeftEndZone = -9.0f;
@@ -251,7 +250,7 @@ public class Character : MonoBehaviour
 
     void MicInput()
     {
-        if (Mic.GetDecibels() > -100)
+        if (Mic.GetDecibels() > Mic.GetMinValue())
         {
             m_anim.SetTrigger("T_Mouth");
         }

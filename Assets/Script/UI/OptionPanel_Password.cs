@@ -24,7 +24,6 @@ public class OptionPanel_Password : MonoBehaviour
     public void SetData()
     {
         DataManager DM = GameObject.Find("DataManager").GetComponent<DataManager>();
-        //Debug.Log(KeyValue);
         inputText.text = DM.GetValues(DM.m_OptionData, KeyValue);
     }
 
@@ -32,7 +31,6 @@ public class OptionPanel_Password : MonoBehaviour
     {
         DataManager DM = GameObject.Find("DataManager").GetComponent<DataManager>();
         Debug.Log(KeyValue);
-        ;
         DM.SaveValues(DM.m_OptionData, KeyValue, inputText.text);
     }
 

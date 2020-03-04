@@ -10,7 +10,7 @@ public class Furniture_Config : MonoBehaviour
     //위치 (x,y)
     GameObject targetObject;
     bool isSetting = false;
-    
+
     float beforeX;
     float beforeY;
     float beforeWidth;

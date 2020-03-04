@@ -10,6 +10,11 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
     Character m_Character;
     bool isHide;
 
+    public bool GetisHide()
+    {
+        return isHide;
+    }
+
     public void SetChromaKeyMode()
     {
         if (!isHide)
