@@ -10,6 +10,7 @@ public class MicUI : MonoBehaviour
     bool ControlSlider = false;
     bool ControlText = false;
     [SerializeField] Slider MicSlider = null;   //마이크 볼륨에 따라 표시되는 슬라이더
+    [SerializeField] Slider MicSlider2 = null;   //마이크 볼륨에 따라 표시되는 슬라이더
     [SerializeField] Slider CurrentSlider = null;   //현재 설정된 최저 볼륨 위치
     [SerializeField] InputField CurrentValueInput = null;
 
@@ -23,12 +24,10 @@ public class MicUI : MonoBehaviour
         CurrentValueInput.text = Mic.GetMinValue().ToString();
         isSetting = true;
     }
-    
     public void OutPannel()
     {
         isSetting = false;
     }
-
     public void _SaveData()
     {
         Mic.SetMinValue(float.Parse(CurrentValueInput.text));
@@ -106,6 +105,8 @@ public class MicUI : MonoBehaviour
             }
             MicSlider.value = volume;
             SetSampleCharacter(volume);
+
+            //float volume = Mic.get
         }
     }
 }

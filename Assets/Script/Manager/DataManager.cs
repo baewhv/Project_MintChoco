@@ -22,8 +22,11 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         SaveDatas(m_OtherData, otherConfigTXT);
 
         CheckData(m_FurnitureData, "Furniture_Background", "Background&0&0&1920&1080&false&0&0&0&1920&1080&false&0&배경&0");
+        CheckData(m_FurnitureData, "Furniture_Lamp", "Lamp&0&0&1920&1080&False&2&0&0&1920&1080&False&2&램프&1");
+        CheckData(m_FurnitureData, "Furniture_Bed", "Bed&0&0&1920&1080&False&2&0&0&1920&1080&False&2&침대&1");
+        CheckData(m_FurnitureData, "Furniture_Drawer", "Drawer&0&0&1920&1080&False&2&0&0&1920&1080&False&2&침대협탁&1");
         CheckData(m_FurnitureData, "Furniture_TV", "TV&553&280&775&474&false&1&553&280&775&474&false&1&모니터&0");
-        CheckData(m_FurnitureData, "Furniture_Chair", "Chair&-379&-96&720&88&False&2&-379&-96&752&880&False&2&의자&1");
+        CheckData(m_FurnitureData, "Furniture_Chair", "Chair&-379&-96&720&880&False&2&-379&-96&752&880&False&2&의자&1");
         CheckData(m_FurnitureData, "Furniture_Desk", "Desk&-406&-689&1099&764&true&0&-406&-689&1099&764&true&0&책상&1");
         CheckData(m_FurnitureData, "Furniture_ChatArea", "ChatArea&550&-225&780&540&true&1&550&-225&780&540&true&1&채팅창&1");
         CheckData(m_FurnitureData, "Furniture_StandMic", "StandMic&-746&-161&450&450&True&2&-746&-161&450&450&True&2&마이크&1");

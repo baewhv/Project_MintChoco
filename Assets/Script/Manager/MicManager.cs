@@ -4,24 +4,17 @@ using UnityEngine;
 
 public class MicManager : SingletonMonoBehaviour<MicManager>
 {
-    public static float MicLoudness;
-    public static float MicLoudnessinDecibels;
-
     float minValue;
     Dictionary<string, string> MicData;
-
-    private string _device;
 
     public float GetMinValue()
     {
         return minValue;
     }
-
     public void SetMinValue(float min)
     {
         minValue = min;
     }
-
     public void SaveData()
     {
         MicData["Value"] = GetMinValue().ToString();
@@ -40,6 +33,10 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
             SetMinValue(float.Parse(MicData["Value"]));
         }
     }
+    //-------------------------------------------------------------------------------------------------------------
+    public static float MicLoudness;
+    public static float MicLoudnessinDecibels;
+    private string _device;
 
     //mic initialization
     public void InitMic()
@@ -69,6 +66,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         float levelMax = 0;
         float[] waveData = new float[_sampleWindow];
         int micPosition = Microphone.GetPosition(null) - (_sampleWindow + 1); // null means the first microphone
+
         if (micPosition < 0) return 0;
         _clipRecord.GetData(waveData, micPosition);
         // Getting a peak on the last 128 samples
@@ -84,60 +82,60 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
     }
 
     //get data from microphone into audioclip
-    float MicrophoneLevelMaxDecibels()
-    {
+    //float MicrophoneLevelMaxDecibels()
+    //{
 
-        float db = 20 * Mathf.Log10(Mathf.Abs(MicLoudness));
+    //    float db = 20 * Mathf.Log10(Mathf.Abs(MicLoudness));
 
-        return db;
-    }
+    //    return db;
+    //}
 
-    public float FloatLinearOfClip(AudioClip clip)
-    {
-        StopMicrophone();
+    //public float FloatLinearOfClip(AudioClip clip)
+    //{
+    //    StopMicrophone();
 
-        _recordedClip = clip;
+    //    _recordedClip = clip;
 
-        float levelMax = 0;
-        float[] waveData = new float[_recordedClip.samples];
+    //    float levelMax = 0;
+    //    float[] waveData = new float[_recordedClip.samples];
 
-        _recordedClip.GetData(waveData, 0);
-        // Getting a peak on the last 128 samples
-        for (int i = 0; i < _recordedClip.samples; i++)
-        {
-            float wavePeak = waveData[i] * waveData[i];
-            if (levelMax < wavePeak)
-            {
-                levelMax = wavePeak;
-            }
-        }
-        return levelMax;
-    }
+    //    _recordedClip.GetData(waveData, 0);
+    //    // Getting a peak on the last 128 samples
+    //    for (int i = 0; i < _recordedClip.samples; i++)
+    //    {
+    //        float wavePeak = waveData[i] * waveData[i];
+    //        if (levelMax < wavePeak)
+    //        {
+    //            levelMax = wavePeak;
+    //        }
+    //    }
+    //    return levelMax;
+    //}
 
-    public float DecibelsOfClip(AudioClip clip)
-    {
-        StopMicrophone();
+    //public float DecibelsOfClip(AudioClip clip)
+    //{
+    //    StopMicrophone();
 
-        _recordedClip = clip;
+    //    _recordedClip = clip;
 
-        float levelMax = 0;
-        float[] waveData = new float[_recordedClip.samples];
+    //    float levelMax = 0;
+    //    float[] waveData = new float[_recordedClip.samples];
 
-        _recordedClip.GetData(waveData, 0);
-        // Getting a peak on the last 128 samples
-        for (int i = 0; i < _recordedClip.samples; i++)
-        {
-            float wavePeak = waveData[i] * waveData[i];
-            if (levelMax < wavePeak)
-            {
-                levelMax = wavePeak;
-            }
-        }
+    //    _recordedClip.GetData(waveData, 0);
+    //    // Getting a peak on the last 128 samples
+    //    for (int i = 0; i < _recordedClip.samples; i++)
+    //    {
+    //        float wavePeak = waveData[i] * waveData[i];
+    //        if (levelMax < wavePeak)
+    //        {
+    //            levelMax = wavePeak;
+    //        }
+    //    }
 
-        float db = 20 * Mathf.Log10(Mathf.Abs(levelMax));
-
-        return db;
-    }
+    //    float db = ((Mathf.Log10(Mathf.Abs(levelMax)) + 9) / 9) * 100;
+    ////    float db = 20 *(Mathf.Log10(Mathf.Abs(levelMax)));
+    //    return db;
+    //}
 
     public float GetDecibels()
     {
@@ -153,7 +151,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         // levelMax equals to the highest normalized value power 2, a small number because < 1
         // pass the value to a static var so we can access it from anywhere
         MicLoudness = MicrophoneLevelMax();
-        MicLoudnessinDecibels = MicrophoneLevelMaxDecibels();
+        //MicLoudnessinDecibels = MicrophoneLevelMaxDecibels();
     }
 
     //bool _isInitialized;
