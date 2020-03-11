@@ -3,41 +3,28 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class OptionPanel_Password : MonoBehaviour
+public class OptionPanel_Check : MonoBehaviour
 {
-    [SerializeField] Text placeholderText = null;
     [SerializeField] Text nameText = null;
-    [SerializeField] InputField inputText = null;
+    [SerializeField] Toggle boolBox = null;
     string KeyValue;
 
-    public void ShowPassword()
-    {
-        inputText.contentType = InputField.ContentType.Standard;
-        inputText.ForceLabelUpdate();
-    }
-    public void HidePassword()
-    {
-        inputText.contentType = InputField.ContentType.Password;
-        inputText.ForceLabelUpdate();
-    }
+
 
     public void SetData()
     {
-        DataManager DM = GameObject.Find("DataManager").GetComponent<DataManager>();
-        inputText.text = DM.GetValues(DM.m_OptionData, KeyValue);
+        var Data = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, KeyValue);
+        boolBox.isOn = bool.Parse(Data);
     }
 
     public void SaveData()
     {
-        DataManager DM = GameObject.Find("DataManager").GetComponent<DataManager>();
-        Debug.Log(KeyValue);
-        DM.SaveValues(DM.m_OptionData, KeyValue, inputText.text);
+        DataManager.Instance.SaveValues(DataManager.Instance.m_OptionData, KeyValue, boolBox.isOn.ToString());
     }
 
     public void SetPanel(string optionKey, string nameT, string placeholderT = "경로를 입력해주세요.")
     {
         KeyValue = optionKey;
         nameText.text = nameT;
-        placeholderText.text = placeholderT;
     }
 }

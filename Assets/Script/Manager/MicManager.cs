@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Audio;
 
 public class MicManager : SingletonMonoBehaviour<MicManager>
 {
@@ -21,161 +22,301 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         string strDatas;
         Util.PackingDictionary(MicData, out strDatas);
         Debug.Log(strDatas);
-        var dm = GameObject.Find("DataManager").GetComponent<DataManager>();
-        dm.SaveValues(dm.m_OtherData, "MicMinValue", strDatas);
-        dm.SaveDatas(dm.m_OtherData,dm.otherConfigTXT);
+        DataManager.Instance.SaveValues(DataManager.Instance.m_OtherData, "MicMinValue", strDatas);
+        DataManager.Instance.SaveDatas(DataManager.Instance.m_OtherData, DataManager.Instance.otherConfigTXT);
+
+        
     }
     void ParseData()
     {
-        var dm = GameObject.Find("DataManager").GetComponent<DataManager>();
-        if (Util.ParseDictionary(dm.GetValues(dm.m_OtherData, "MicMinValue"), out MicData))
+        if (Util.ParseDictionary(DataManager.Instance.GetValues(DataManager.Instance.m_OtherData, "MicMinValue"), out MicData))
         {
             SetMinValue(float.Parse(MicData["Value"]));
         }
     }
     //-------------------------------------------------------------------------------------------------------------
-    public static float MicLoudness;
-    public static float MicLoudnessinDecibels;
-    private string _device;
+    public float sensitivity = 100;
+    public float loudness = 0;
+    public float pitch = 0;
+    AudioSource _audio;
 
-    //mic initialization
-    public void InitMic()
+    public float RmsValue;
+    public float DBValue;
+    public float PitchValue;
+
+    private const int QSamples = 1024;
+    private const float RefValue = 0.1f;
+    private const float Threshold = 0.02f;
+
+    float[] _samples;
+    private float[] _spectrum;
+
+    float[] _freqBand = new float[8];
+    float[] _bandBuffer = new float[8];
+    float[] _bufferDecrease = new float[8];
+    float[] _freqBandHightest = new float[8];
+    public float[] _audioBand = new float[8];
+    public float[] _audioBandBuffer = new float[8];
+    public float _Amplitude, _AmplitudeBuffer;
+    float _AmplitudeHighest;
+    private float _fSample;
+
+
+    public bool startMicOnStartup = true;
+
+    public bool stopMicrophoneListener = false;
+    public bool startMicrophoneListener = false;
+
+    private bool microphoneListenerOn = false;
+
+    public bool disableOutputSound = false;
+
+    AudioSource src;
+
+    public AudioMixer masterMixer;
+
+    float timeSinceRestart = 0;
+
+    private void Start()
     {
-        if (_device == null)
+        ParseData();
+        if (startMicOnStartup)
         {
-            _device = Microphone.devices[0];
-        }
-        _clipRecord = Microphone.Start(_device, true, 999, 44100);
-        //_isInitialized = true;
-    }
+            //RestartMicrophoneListener();
+            StartMicrophoneListener();
 
-    public void StopMicrophone()
-    {
-        Microphone.End(_device);
-        //_isInitialized = false;
-    }
-
-
-    AudioClip _clipRecord;
-    AudioClip _recordedClip;
-    int _sampleWindow = 128;
-
-    //get data from microphone into audioclip
-    float MicrophoneLevelMax()
-    {
-        float levelMax = 0;
-        float[] waveData = new float[_sampleWindow];
-        int micPosition = Microphone.GetPosition(null) - (_sampleWindow + 1); // null means the first microphone
-
-        if (micPosition < 0) return 0;
-        _clipRecord.GetData(waveData, micPosition);
-        // Getting a peak on the last 128 samples
-        for (int i = 0; i < _sampleWindow; i++)
-        {
-            float wavePeak = waveData[i] * waveData[i];
-            if (levelMax < wavePeak)
+            _audio = GetComponent<AudioSource>();
+            _audio.clip = Microphone.Start(null, true, 10, 44100);
+            _audio.loop = true;
+            while (!(Microphone.GetPosition(null) > 0))
             {
-                levelMax = wavePeak;
+
+            }
+            _audio.Play();
+            _samples = new float[QSamples];
+            _spectrum = new float[QSamples];
+            _fSample = AudioSettings.outputSampleRate;
+        }
+    }
+    public int _countReset = 0;
+    public int _currentPosition;
+    void CountReset()
+    {
+        if (Microphone.GetPosition(null) < _currentPosition)
+        {
+            _countReset++;
+        }
+        _currentPosition = Microphone.GetPosition(null);
+    }
+    private void Update()
+    {
+        if (stopMicrophoneListener)
+        {
+            StopMicrophoneListener();
+        }
+        if (startMicrophoneListener)
+        {
+            //StartMicrophoneListener();
+        }
+
+        stopMicrophoneListener = false;
+        startMicrophoneListener = false;
+
+        MicrophoneIntoAudioSource(microphoneListenerOn);
+        CountReset();
+
+        DisableSound(!disableOutputSound);
+
+        loudness = GetAveragedVolume() * sensitivity;
+        GetPitch();
+
+        MakeFrequencyBands();
+        BandBuffer();
+        CreateAudioBand();
+        GetAmplitude();
+    }
+
+    void BandBuffer()
+    {
+        for (int g = 0; g < 8; ++g)
+        {
+            if (_freqBand[g] > _bandBuffer[g])
+            {
+                _bandBuffer[g] = _freqBand[g];
+                _bufferDecrease[g] = 0.005f;
+            }
+            if (_freqBand[g] < _bandBuffer[g])
+            {
+                _bandBuffer[g] -= _bufferDecrease[g];
+                _bufferDecrease[g] *= 1.2f;
             }
         }
-        return levelMax;
     }
 
-    //get data from microphone into audioclip
-    //float MicrophoneLevelMaxDecibels()
-    //{
+    void MakeFrequencyBands()
+    {
+        if (loudness < 0.001)
+            return;
+        int count = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            float average = 0;
+            int sampleCount = (int)Mathf.Pow(2, i) * 2;
 
-    //    float db = 20 * Mathf.Log10(Mathf.Abs(MicLoudness));
+            if (i == 7)
+            {
+                sampleCount += 2;
+            }
+            for (int J = 0; J < 8; J++)
+            {
+                average += _spectrum[count] * (count + 1);
+                count++;
+            }
+            average /= count;
 
-    //    return db;
-    //}
+            _freqBand[i] = average * 10;
+        }
+    }
+    void CreateAudioBand()
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (_freqBand[i] > _freqBandHightest[i])
+            {
+                _freqBandHightest[i] = _freqBand[i];
+            }
+            _audioBand[i] = (_freqBand[i] / _freqBandHightest[i]);
+            _audioBandBuffer[i] = (_bandBuffer[i] / _freqBandHightest[i]);
+        }
+    }
 
-    //public float FloatLinearOfClip(AudioClip clip)
-    //{
-    //    StopMicrophone();
+    void GetAmplitude()
+    {
+        float _CurrentAplitude = 0;
+        float _CurrentAplitudeBuffer = 0;
+        for (int i = 0; i < 8; i++)
+        {
+            _CurrentAplitude += _audioBand[i];
+            _CurrentAplitudeBuffer += _audioBandBuffer[i];
+        }
+        if (_CurrentAplitude > _AmplitudeHighest)
+        {
+            _AmplitudeHighest = _CurrentAplitude;
+        }
+        _Amplitude = _CurrentAplitude / _AmplitudeHighest;
+        _AmplitudeBuffer = _CurrentAplitudeBuffer / _AmplitudeHighest;
+    }
 
-    //    _recordedClip = clip;
+    float GetAveragedVolume()
+    {
+        float[] data = new float[256];
+        float a = 0;
+        _audio.GetOutputData(data, 0);
+        foreach (float s in data)
+        {
+            a += Mathf.Abs(s);
+        }
+        return a / 256;
+    }
 
-    //    float levelMax = 0;
-    //    float[] waveData = new float[_recordedClip.samples];
+    void GetPitch()
+    {
+        GetComponent<AudioSource>().GetOutputData(_samples, 0);
 
-    //    _recordedClip.GetData(waveData, 0);
-    //    // Getting a peak on the last 128 samples
-    //    for (int i = 0; i < _recordedClip.samples; i++)
-    //    {
-    //        float wavePeak = waveData[i] * waveData[i];
-    //        if (levelMax < wavePeak)
-    //        {
-    //            levelMax = wavePeak;
-    //        }
-    //    }
-    //    return levelMax;
-    //}
+        float sum = 0;
+        for (int i = 0; i < QSamples; i++)
+        {
+            sum += _samples[i] * _samples[i];   //여기서도 제곱.
+        }
+        RmsValue = Mathf.Sqrt(sum / QSamples);
+        DBValue = 20 * Mathf.Log10(RmsValue / RefValue);
+        if (DBValue < -160)
+        {
+            DBValue = -160;
+        }
+        GetComponent<AudioSource>().GetSpectrumData(_spectrum, 0, FFTWindow.BlackmanHarris);
+        float maxV = 0;
+        var maxN = 0;
+        for (int i = 0; i < QSamples; i++)
+        {
+            if (!(_spectrum[i] > maxV) || !(_spectrum[i] > Threshold))
+            {
+                continue;
+            }
+            maxV = _spectrum[i];
+            maxN = i;
+        }
+        float freqN = maxN;
+        if (maxN > 0 && maxN < QSamples - 1)
+        {
+            var dL = _spectrum[maxN - 1] / _spectrum[maxN];
+            var dR = _spectrum[maxN + 1] / _spectrum[maxN];
+            freqN += 0.5f * (dR * dR - dL * dL);
+        }
+        PitchValue = freqN * (_fSample / 2) / QSamples;
+    }
 
-    //public float DecibelsOfClip(AudioClip clip)
-    //{
-    //    StopMicrophone();
+    public void StopMicrophoneListener()
+    {
+        microphoneListenerOn = false;
+        disableOutputSound = false;
+        src.Stop();
+        src.clip = null;
+        Microphone.End(null);
+    }
 
-    //    _recordedClip = clip;
+    public void StartMicrophoneListener()
+    {
+        microphoneListenerOn = true;
+        disableOutputSound = true;
+        RestartMicrophoneListener();
+    }
 
-    //    float levelMax = 0;
-    //    float[] waveData = new float[_recordedClip.samples];
+    public void DisableSound(bool SoundOn)
+    {
+        float volume = 0;
+        if (SoundOn)
+        {
+            volume = 0.0f;
+        }
+        else
+        {
+            volume = -80.0f;
+        }
 
-    //    _recordedClip.GetData(waveData, 0);
-    //    // Getting a peak on the last 128 samples
-    //    for (int i = 0; i < _recordedClip.samples; i++)
-    //    {
-    //        float wavePeak = waveData[i] * waveData[i];
-    //        if (levelMax < wavePeak)
-    //        {
-    //            levelMax = wavePeak;
-    //        }
-    //    }
+        masterMixer.SetFloat("MasterVolume", volume);
+    }
 
-    //    float db = ((Mathf.Log10(Mathf.Abs(levelMax)) + 9) / 9) * 100;
-    ////    float db = 20 *(Mathf.Log10(Mathf.Abs(levelMax)));
-    //    return db;
-    //}
+    public void RestartMicrophoneListener()
+    {
+        src = GetComponent<AudioSource>();
+        src.clip = null;
+
+        timeSinceRestart = Time.time;
+    }
+
+    void MicrophoneIntoAudioSource(bool MicrophoneListenerOn)
+    {
+        if (MicrophoneListenerOn)
+        {
+            if (Time.time - timeSinceRestart > 0.5f && !Microphone.IsRecording(null))
+            {
+                src.clip = Microphone.Start(null, true, 10, 44100);
+
+                while (!(Microphone.GetPosition(null) > 0))
+                {
+
+                }
+                
+                src.Play();
+                
+            }
+        }
+    }
 
     public float GetDecibels()
     {
-        float db = ((Mathf.Log10(Mathf.Abs(MicLoudness)) + 9) / 9) * 100;
-
-        return db ;
+        return loudness * 100;
     }
-
-
-
-    void Update()
-    {
-        // levelMax equals to the highest normalized value power 2, a small number because < 1
-        // pass the value to a static var so we can access it from anywhere
-        MicLoudness = MicrophoneLevelMax();
-        //MicLoudnessinDecibels = MicrophoneLevelMaxDecibels();
-    }
-
-    //bool _isInitialized;
-    // start mic when scene starts
-    void OnEnable()
-    {
-        InitMic();
-        //_isInitialized = true;
-    }
-
-    override protected void OnStart()
-    {
-        base.OnStart();
-        ParseData();
-    }
-
-    
-
-    void OnDestroy()
-    {
-        StopMicrophone();
-    }
-
-
-
 }
 

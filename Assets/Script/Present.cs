@@ -9,7 +9,6 @@ public class Present : MonoBehaviour
     // Start is called before the first frame update
     [SerializeField] CapsuleCollider m_collider = null;
     [SerializeField] Rigidbody m_rigidbody = null;
-    PresentsManager P_Manager;
     int speed;
     private void OnTriggerEnter(Collider collision)
     {
@@ -70,7 +69,6 @@ public class Present : MonoBehaviour
 
     private void Awake()
     {
-        P_Manager = GameObject.Find("PresentsManager").GetComponent<PresentsManager>();
         body = GetComponent<SpriteRenderer>();
         m_collider = GetComponent<CapsuleCollider>();
         speed = 0;

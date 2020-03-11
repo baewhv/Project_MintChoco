@@ -26,6 +26,7 @@ public class Character : MonoBehaviour
     bool canMove; 
     bool equipWeapon;
     bool canEmoticon;
+    bool canBlink;
 
     Vector3 m_dir = Vector3.zero;
 
@@ -37,6 +38,7 @@ public class Character : MonoBehaviour
         //isTalk = false;
         canMove = true;
         canJump = true;
+        canBlink = true;
         canEmoticon = true;
         equipWeapon = false;
         transform.position = DefaultPosition;
@@ -54,22 +56,19 @@ public class Character : MonoBehaviour
     void Start()
     {
         initProperty();
-        StartBlink();
-    }
-
-    public void StartBlink()
-    {
         StartCoroutine(EyeBlink());
     }
 
+
     public void ShowFace()
     {
-        StartBlink();
+        canBlink = true;
         m_Eye.gameObject.SetActive(true);
     }
     public void HideFace()
     {
-        StopCoroutine(EyeBlink());
+        StopCoroutine("EyeBlink");
+        canBlink = false;
         m_Eye.gameObject.SetActive(false);
     }
 
@@ -78,7 +77,10 @@ public class Character : MonoBehaviour
         while (true)
         {
             yield return new WaitForSeconds(Util.Rand(3, 5));
-            m_anim.SetTrigger("T_Blink"); 
+            if (canBlink)
+            {
+                m_anim.SetTrigger("T_Blink");
+            }
         }
     }
 
@@ -252,9 +254,14 @@ public class Character : MonoBehaviour
     {
         if (Mic.GetDecibels() > Mic.GetMinValue())
         {
-            m_anim.SetTrigger("T_Mouth");
+            m_anim.SetBool("B_Mouth" , true);
+        }
+        else
+        {
+            m_anim.SetBool("B_Mouth", false);
         }
     }
+
 
 
     void OnTriggerEnter(Collider collision)     //점프 후 착륙 함수

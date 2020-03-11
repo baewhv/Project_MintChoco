@@ -6,13 +6,15 @@ using UnityEngine.UI;
 public class FurnitureUI : MonoBehaviour
 {
     List<GameObject> furnitureList = new List<GameObject>();
-    [SerializeField] GridLayoutGroup m_funitureGrid = null;
+    [SerializeField] GridLayoutGroup m_furnitureGrid = null;
+    [SerializeField] VerticalLayoutGroup m_furnitureList = null;
     [SerializeField] GameObject m_furnitureConfig = null;
     [SerializeField] Text AllertMessage = null;
 
-    GameObject m_furniture = null;
+    GameObject m_furnitureIcon = null;
+    GameObject m_furniturelist = null;
     GameObject m_addFurniture = null;
-    DataManager DM = null;
+   
     
 
     public int GetfurnitureListCount()
@@ -24,33 +26,43 @@ public class FurnitureUI : MonoBehaviour
     public void CreateFurniture()
     {
         ClearList();
+        m_furnitureList.gameObject.SetActive(true);
+        m_furnitureGrid.gameObject.SetActive(false);
+        GetComponent<ScrollRect>().content = (RectTransform)m_furnitureList.transform;
         AllertMessage.gameObject.SetActive(false);
-        var obj = GameObject.Find("ObjectManager").GetComponent<ObjectManager>().m_ObjectList;
+        var obj = ObjectManager.Instance.m_ObjectList;
         for (int i = 0; i < obj.Count; i++)
         {
-            if (obj[i].name != "Furniture_Background" && obj[i].name != "Furniture_TV")
+            if (obj[i].name != "Furniture_Background")
             {
-                CreateFurnitureIcon(obj[i].name, obj[i]);
+                CreateFurnitureListIcon(obj[i].name, obj[i]);
             }
         }
+        CreateCharacterPosition();
         CreateAddFurniture();
+        SortFurniture();
     }
 
-    public void CreateFurnitureIcon(string optionKey, GameObject _obj)
+    public void CreateFurnitureListIcon(string optionKey, GameObject _obj)
     {
-        var obj = Instantiate(m_furniture) as GameObject;
-        obj.transform.SetParent(m_funitureGrid.transform);
+        var obj = Instantiate(m_furniturelist) as GameObject;
+        obj.transform.SetParent(m_furnitureList.transform);
         obj.transform.localScale = Vector3.one;
         obj.name = optionKey;
-        obj.GetComponent<Furnituer_Item>().SetPanel(optionKey, _obj);
-        obj.GetComponent<Button>().onClick.AddListener(()=> { obj.GetComponent<Furnituer_Item>().OpenFurnitureConfig(m_furnitureConfig); });
+        obj.GetComponent<Furniture_List>().SetPanel(optionKey, _obj);
+        obj.GetComponent<Furniture_List>().UpButton.onClick.AddListener(() => { _ListUpButton(obj); });
+        obj.GetComponent<Furniture_List>().DownButton.onClick.AddListener(() => { _ListDownButton(obj); });
+        obj.GetComponent<Button>().onClick.AddListener(()=> { obj.GetComponent<Furniture_List>()._OpenFurnitureConfig(m_furnitureConfig); });
         furnitureList.Add(obj);
     }
 
     public void CreateSpriteList()
     {
         ClearList();
-        Sprite[] spr = DM.GetAllImage();
+        m_furnitureGrid.gameObject.SetActive(true);
+        m_furnitureList.gameObject.SetActive(false);
+        GetComponent<ScrollRect>().content = (RectTransform)m_furnitureGrid.transform;
+        Sprite[] spr = DataManager.Instance.GetAllImage();
         CreateReturnFurniture();
         if (spr.Length != 0)
         {
@@ -68,8 +80,8 @@ public class FurnitureUI : MonoBehaviour
 
     public void CreateSpriteIcon(Sprite spr)
     {
-        var obj = Instantiate(m_furniture) as GameObject;
-        obj.transform.SetParent(m_funitureGrid.transform);
+        var obj = Instantiate(m_furnitureIcon) as GameObject;
+        obj.transform.SetParent(m_furnitureGrid.transform);
         obj.transform.localScale = Vector3.one;
         obj.name = spr.name;
         obj.GetComponent<Furnituer_Item>().SetPanel(spr);
@@ -80,18 +92,32 @@ public class FurnitureUI : MonoBehaviour
     public void CreateAddFurniture()
     {
         var obj = Instantiate(m_addFurniture) as GameObject;
-        obj.transform.SetParent(m_funitureGrid.transform);
+        obj.name = m_addFurniture.name;
+        obj.transform.SetParent(m_furnitureList.transform);
         obj.transform.localScale = Vector3.one;
-        obj.GetComponent<Button>().onClick.AddListener(() => { OpenSpriteList(); });
+        obj.GetComponent<Button>().onClick.AddListener(() => { _OpenSpriteList(); });
+        furnitureList.Add(obj);
+    }
+
+    public void CreateCharacterPosition()
+    {
+        var obj = Instantiate(m_furniturelist) as GameObject;
+        obj.transform.SetParent(m_furnitureList.transform);
+        obj.transform.localScale = Vector3.one;
+        obj.name = "캐릭터";
+        Sprite spr = Resources.Load<Sprite>("Character/Test2");
+        obj.GetComponent<Furniture_List>().SetPanel(obj.name , spr);
+        obj.GetComponent<Furniture_List>().UpButton.interactable = false;
+        obj.GetComponent<Furniture_List>().DownButton.interactable = false;
         furnitureList.Add(obj);
     }
 
     public void CreateReturnFurniture()
     {
         var obj = Instantiate(m_addFurniture) as GameObject;
-        obj.transform.SetParent(m_funitureGrid.transform);
+        obj.transform.SetParent(m_furnitureGrid.transform);
         obj.transform.localScale = Vector3.one;
-        obj.GetComponent<Button>().onClick.AddListener(() => { ReturnToFurnitureList(); });
+        obj.GetComponent<Button>().onClick.AddListener(() => { _ReturnToFurnitureList(); });
         Util.FindChildObject(Util.FindChildObject(obj, "Background"), "Text").GetComponent<Text>().text = "취소";
         furnitureList.Add(obj);
     }
@@ -100,35 +126,113 @@ public class FurnitureUI : MonoBehaviour
     {
         for (int i = 0; i < furnitureList.Count; i++)
         {
-            Destroy(furnitureList[i]);
+            DestroyImmediate(furnitureList[i]);
         }
         furnitureList.Clear();
     }
 
-    public void OpenSpriteList()
+    public void _OpenSpriteList()
     {
         CreateSpriteList();
     }
 
-    public void ReturnToFurnitureList()
+    public void _ReturnToFurnitureList()
     {
         CreateFurniture();
     }
 
+    public void _ListUpButton(GameObject obj)
+    {
+        for (int i = 0; i < furnitureList.Count; i++)
+        {
+            if (obj == furnitureList[i])
+            {
+                int sibling = furnitureList[i].transform.GetSiblingIndex();
+                if (sibling - 1 < 0)
+                {
+                    return;
+                }
+                else if (sibling - 1 == furnitureList.Count - ObjectManager.Instance.GetBackCanvasCount() - 1)
+                {
+                    ObjectManager.Instance.ObjectSwitchPosition(obj.GetComponent<Furniture_List>().LinkedObject);
+                }
+                else
+                {
+                    ObjectManager.Instance.ObjectMoveUp(obj.GetComponent<Furniture_List>().LinkedObject);
+                }
+                furnitureList[i].transform.SetSiblingIndex(sibling - 1);
+                
+            }
+        }
+    }
+    public void _ListDownButton(GameObject obj)
+    {
+        for (int i = 0; i < furnitureList.Count; i++)
+        {
+            if (obj == furnitureList[i])
+            {
+                int sibling = furnitureList[i].transform.GetSiblingIndex();
+                if (sibling + 1 > furnitureList.Count -2)
+                {
+                    return;
+                }
+                else if (sibling + 1 == furnitureList.Count - ObjectManager.Instance.GetBackCanvasCount() - 1)
+                {
+                    ObjectManager.Instance.ObjectSwitchPosition(obj.GetComponent<Furniture_List>().LinkedObject);
+                }
+                else
+                {
+                    ObjectManager.Instance.ObjectMoveDown(obj.GetComponent<Furniture_List>().LinkedObject);
+                }
+                furnitureList[i].transform.SetSiblingIndex(sibling + 1);
+            }
+        }
+    }
+    void SortFurniture()
+    {
+        for (int  i= 0; i < furnitureList.Count; i++)
+        {
+
+            if (furnitureList[i].name == "캐릭터")
+            {
+                furnitureList[i].transform.SetSiblingIndex(furnitureList.Count - (ObjectManager.Instance.GetBackCanvasCount() + 1));      //-1은 백그라운드가 안들어오기 때문.
+                furnitureList[i].SetActive(true);
+                continue;
+            }
+            else if(furnitureList[i].name == m_addFurniture.name)
+            {
+                furnitureList[i].transform.SetAsLastSibling();
+                continue;
+            }
+            furnitureList[i].transform.SetAsFirstSibling();
+            var targetObj = furnitureList[i].GetComponent<Furniture_List>().LinkedObject.GetComponent<FurnitureObject>();
+            int sortNum;
+            if (targetObj.GetComponent<FurnitureObject>().frontOrder)
+            {
+                sortNum = furnitureList.Count - (ObjectManager.Instance.GetBackCanvasCount() + targetObj.m_sort + 1);
+            }
+            else
+            {
+                sortNum = furnitureList.Count - (targetObj.m_sort + 1);
+            }
+            furnitureList[i].transform.SetSiblingIndex(sortNum);
+            furnitureList[i].SetActive(true);
+        }
+    }
+
     void Awake()
     {
-        m_furniture = Resources.Load("Prefab/UI/Furniture_Icon") as GameObject;
+        m_furnitureIcon = Resources.Load("Prefab/UI/Furniture_Icon") as GameObject;
+        m_furniturelist = Resources.Load("Prefab/UI/Furniture_List") as GameObject;
         m_addFurniture = Resources.Load("Prefab/UI/Furniture_Add") as GameObject;
+        m_furnitureGrid.gameObject.SetActive(false);
+        m_furnitureList.gameObject.SetActive(false);
         SetFurniturePannel();
     }
+
     public void SetFurniturePannel()
     {
         AllertMessage.gameObject.SetActive(false);
         m_furnitureConfig.SetActive(false);
-    }
-
-    private void Start()
-    {
-        DM = GameObject.Find("DataManager").GetComponent<DataManager>();
     }
 }

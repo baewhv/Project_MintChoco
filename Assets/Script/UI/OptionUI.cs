@@ -12,6 +12,7 @@ public class OptionUI : MonoBehaviour
     [SerializeField] GameObject settingUI = null;
     List<GameObject> optionList = new List<GameObject>();
     GameObject m_optionPrefab_Pass = null;
+    GameObject m_optionPrefab_Check = null;
     [SerializeField] VerticalLayoutGroup m_optionGrid = null;
 
     [SerializeField] Toggle donateToggle = null;
@@ -27,10 +28,6 @@ public class OptionUI : MonoBehaviour
     [SerializeField] Toggle micToggle = null;
     [SerializeField] MicUI micUI = null;
     
-
-    
-    DataManager m_dataManager = null;
-
     public LogUI SendTVPanel()
     {
         return logUI;
@@ -38,10 +35,8 @@ public class OptionUI : MonoBehaviour
 
     void CreateOptions()
     {
-        for(int i = 0; i < m_dataManager.m_OptionData.Count; i++)
-        {
-            CreateOption_Password("Option_TwippyAddress", "TwippyLogAddress", "트위피 로그파일 경로", "주소를 입력해 주세요.");
-        }
+        CreateOption_Password("Option_TwippyAddress", "TwippyLogAddress", "트위피 로그파일 경로", "주소를 입력해 주세요.");
+        CreateOption_Check("Option_SelectSpotLight", "SelectSpotLight", "호우! 제대로 놀아보자!");
     }
 
     public void ToggleSettingUI()
@@ -88,6 +83,7 @@ public class OptionUI : MonoBehaviour
         }
         else
         {
+            furnitureUI.ClearList();
             furnitureUI.gameObject.SetActive(false);
         }
     }
@@ -126,6 +122,15 @@ public class OptionUI : MonoBehaviour
         obj.GetComponent<OptionPanel_Password>().SetPanel(optionKey, name, placeholder);
         optionList.Add(obj);
     }
+    public void CreateOption_Check(string optionName, string optionKey, string name)
+    {
+        var obj = Instantiate(m_optionPrefab_Check) as GameObject;
+        obj.transform.SetParent(m_optionGrid.transform);
+        obj.transform.localScale = Vector3.one;
+        obj.name = optionName;
+        obj.GetComponent<OptionPanel_Check>().SetPanel(optionKey, name);
+        optionList.Add(obj);
+    }
 
 
     void SetOptions()
@@ -141,7 +146,7 @@ public class OptionUI : MonoBehaviour
         {
             optionList[i].SendMessage("SaveData");
         }
-        m_dataManager.SaveDatas(m_dataManager.m_OptionData, m_dataManager.optionConfigTXT);
+        DataManager.Instance.SaveDatas(DataManager.Instance.m_OptionData, DataManager.Instance.optionConfigTXT);
     }
     public void DestroyOptions()
     {
@@ -152,12 +157,11 @@ public class OptionUI : MonoBehaviour
         furnitureUI.ClearList();
         optionList.Clear();
         logToggle.isOn = true;
-
     }
     void Awake()
     {
         m_optionPrefab_Pass = Resources.Load("Prefab/UI/OptionPanel_Password") as GameObject;
-        m_dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
+        m_optionPrefab_Check = Resources.Load("Prefab/UI/OptionPanel_Check") as GameObject;
     }
     private void Start()
     {

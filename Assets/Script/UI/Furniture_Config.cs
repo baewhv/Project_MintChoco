@@ -27,7 +27,6 @@ public class Furniture_Config : MonoBehaviour
     [SerializeField] InputField inputY = null;
     [SerializeField] InputField inputWidth = null;
     [SerializeField] InputField inputHeight = null;
-    [SerializeField] InputField inputSort = null;
     [SerializeField] Button ApplyButton = null;
     [SerializeField] Button CancelButton = null;
     [SerializeField] Button ResetButton = null;
@@ -53,6 +52,17 @@ public class Furniture_Config : MonoBehaviour
         SetText();
         SetBeforeValue();
         //SetConfigListeners();
+        if(target.GetComponent<FurnitureObject>().GetSpecific() == 0)
+        {
+            inputWidth.interactable = false;
+            inputHeight.interactable = false;
+        }
+        else
+        {
+            inputWidth.interactable = true;
+            inputHeight.interactable = true;
+        }
+
         ResetButton.gameObject.SetActive(true);
         DeleteButton.gameObject.SetActive(true);
         isSetting = true;
@@ -107,7 +117,6 @@ public class Furniture_Config : MonoBehaviour
     {
         var obj = targetObject.GetComponent<FurnitureObject>();
         var rt = (RectTransform)targetObject.transform;
-        inputSort.text = obj.m_sort.ToString();
         inputX.text = ((int)rt.localPosition.x).ToString();
         inputY.text = ((int)rt.localPosition.y).ToString();
         inputWidth.text = ((int)rt.sizeDelta.x).ToString();
@@ -141,15 +150,13 @@ public class Furniture_Config : MonoBehaviour
 
     public void _ApplyConfig()
     {
-        var obj = GameObject.Find("ObjectManager").GetComponent<ObjectManager>();
-        obj.SaveObjectData(targetObject);
+        ObjectManager.Instance.SaveObjectData(targetObject);
         isSetting = false;
         gameObject.SetActive(false);
     }
     public void _ApplyAddConfig()
     {
-        var obj = GameObject.Find("ObjectManager").GetComponent<ObjectManager>();
-        obj.AddObjectData(Icon.sprite);
+        ObjectManager.Instance.AddObjectData(Icon.sprite);
         transform.parent.GetComponent<FurnitureUI>().CreateFurniture();
         gameObject.SetActive(false);
     }
@@ -164,7 +171,6 @@ public class Furniture_Config : MonoBehaviour
 
     public void _CancelAddConfig()
     {
-        var obj = GameObject.Find("ObjectManager").GetComponent<ObjectManager>();
         gameObject.SetActive(false);
     }
 
@@ -177,8 +183,7 @@ public class Furniture_Config : MonoBehaviour
     }
     public void _DeleteConfig()
     {
-        var obj = GameObject.Find("ObjectManager").GetComponent<ObjectManager>();
-        obj.DeleteObject(targetObject);
+        ObjectManager.Instance.DeleteObject(targetObject);
         transform.parent.GetComponent<FurnitureUI>().CreateFurniture();
         gameObject.SetActive(false);
     }
@@ -195,7 +200,6 @@ public class Furniture_Config : MonoBehaviour
         switch (str)
         {
             case "posX":
-                Debug.Log("text : " + inputX.text);
                 if (!int.TryParse(inputX.text, out getInt))
                 {
                     getInt = 0;
@@ -262,23 +266,6 @@ public class Furniture_Config : MonoBehaviour
                     inputHeight.text = 0.ToString();
                 }
                 rt.sizeDelta = new Vector2(rt.sizeDelta.x, getInt);
-                break;
-            case "sort":
-                if (!int.TryParse(inputSort.text, out getInt))
-                {
-                    getInt = 0;
-                }
-                if (getInt > 100)
-                {
-                    getInt = 100;
-                    inputSort.text = 100.ToString();
-                }
-                else if (getInt < 0)
-                {
-                    getInt = 0;
-                    inputSort.text = 0.ToString();
-                }
-                targetObject.GetComponent<FurnitureObject>().m_sort = getInt;
                 break;
         }
     }

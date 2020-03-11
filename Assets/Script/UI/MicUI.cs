@@ -5,12 +5,10 @@ using UnityEngine.UI;
 
 public class MicUI : MonoBehaviour
 {
-    MicManager Mic = null;  //애초에 마이크 매니저에서 0~1값을 받아버리자.
     bool isSetting = false;
     bool ControlSlider = false;
     bool ControlText = false;
     [SerializeField] Slider MicSlider = null;   //마이크 볼륨에 따라 표시되는 슬라이더
-    [SerializeField] Slider MicSlider2 = null;   //마이크 볼륨에 따라 표시되는 슬라이더
     [SerializeField] Slider CurrentSlider = null;   //현재 설정된 최저 볼륨 위치
     [SerializeField] InputField CurrentValueInput = null;
 
@@ -20,8 +18,8 @@ public class MicUI : MonoBehaviour
 
     public void SetPannel()
     {
-        CurrentSlider.value = Mic.GetMinValue();
-        CurrentValueInput.text = Mic.GetMinValue().ToString();
+        CurrentSlider.value = MicManager.Instance.GetMinValue();
+        CurrentValueInput.text = MicManager.Instance.GetMinValue().ToString();
         isSetting = true;
     }
     public void OutPannel()
@@ -30,13 +28,12 @@ public class MicUI : MonoBehaviour
     }
     public void _SaveData()
     {
-        Mic.SetMinValue(float.Parse(CurrentValueInput.text));
-        Mic.SaveData();
+        MicManager.Instance.SetMinValue(float.Parse(CurrentValueInput.text));
+        MicManager.Instance.SaveData();
     }
 
     public void _ChangeSliderValue()
     {
-        Debug.Log("ChageSlider");
         if (!isSetting || ControlText)
         {
             return;
@@ -48,7 +45,6 @@ public class MicUI : MonoBehaviour
     }
     public void _ChangeFieldValue()
     {
-        Debug.Log("ChageValue");
         if (!isSetting || ControlSlider)
         {
             return;
@@ -69,10 +65,6 @@ public class MicUI : MonoBehaviour
         ControlText = false;
     }
 
-    void Awake()
-    {
-        Mic = GameObject.Find("MicManager").GetComponent<MicManager>();
-    }
 
     void SetSampleCharacter(float _volume)
     {
@@ -93,8 +85,7 @@ public class MicUI : MonoBehaviour
     {
         if(gameObject.activeSelf)
         {
-            float volume = Mic.GetDecibels();
-            //Debug.Log(volume);
+            float volume = MicManager.Instance.GetDecibels();
             if(volume < 0)
             {
                 volume  = 0;
@@ -105,8 +96,6 @@ public class MicUI : MonoBehaviour
             }
             MicSlider.value = volume;
             SetSampleCharacter(volume);
-
-            //float volume = Mic.get
         }
     }
 }

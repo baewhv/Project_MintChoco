@@ -17,16 +17,17 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
     public void CreateDefaultData()
     {
         CheckData(m_OptionData, "TwippyLogAddress", @"C:\Users\YourName\AppData\Roaming\Twippy\userdata");
+        CheckData(m_OptionData, "SelectSpotLight", "False");
         SaveDatas(m_OptionData, optionConfigTXT);
         CheckData(m_OtherData, "MicMinValue", "OptionCategory:Mic&Value:40");
         SaveDatas(m_OtherData, otherConfigTXT);
 
         CheckData(m_FurnitureData, "Furniture_Background", "Background&0&0&1920&1080&false&0&0&0&1920&1080&false&0&배경&0");
-        CheckData(m_FurnitureData, "Furniture_Lamp", "Lamp&0&0&1920&1080&False&2&0&0&1920&1080&False&2&램프&1");
+        CheckData(m_FurnitureData, "Furniture_Lamp", "Lamp&0&0&1920&1080&False&1&0&0&1920&1080&False&1&램프&1");
         CheckData(m_FurnitureData, "Furniture_Bed", "Bed&0&0&1920&1080&False&2&0&0&1920&1080&False&2&침대&1");
-        CheckData(m_FurnitureData, "Furniture_Drawer", "Drawer&0&0&1920&1080&False&2&0&0&1920&1080&False&2&침대협탁&1");
-        CheckData(m_FurnitureData, "Furniture_TV", "TV&553&280&775&474&false&1&553&280&775&474&false&1&모니터&0");
-        CheckData(m_FurnitureData, "Furniture_Chair", "Chair&-379&-96&720&880&False&2&-379&-96&752&880&False&2&의자&1");
+        CheckData(m_FurnitureData, "Furniture_Drawer", "Drawer&0&0&1920&1080&False&3&0&0&1920&1080&False&3&침대협탁&1");
+        CheckData(m_FurnitureData, "Furniture_TV", "TV&553&280&775&474&false&4&553&280&775&474&false&4&모니터&0");
+        CheckData(m_FurnitureData, "Furniture_Chair", "Chair&-379&-96&720&880&False&5&-379&-96&752&880&False&5&의자&1");
         CheckData(m_FurnitureData, "Furniture_Desk", "Desk&-406&-689&1099&764&true&0&-406&-689&1099&764&true&0&책상&1");
         CheckData(m_FurnitureData, "Furniture_ChatArea", "ChatArea&550&-225&780&540&true&1&550&-225&780&540&true&1&채팅창&1");
         CheckData(m_FurnitureData, "Furniture_StandMic", "StandMic&-746&-161&450&450&True&2&-746&-161&450&450&True&2&마이크&1");
@@ -86,7 +87,6 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         }
         else
         {
-            Debug.Log(key + "NotFound");
             return "NotFound";
         }
     }

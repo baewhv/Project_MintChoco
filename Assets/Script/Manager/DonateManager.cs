@@ -12,8 +12,6 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
     string sessionDonationCountTextRocation;
     string recentDonatorsTextRocation;
     bool canDonate = false;
-    PresentsManager m_presentManger;
-    DataManager dataManager;
     LogUI m_massege = null;
 
     
@@ -71,7 +69,7 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
                     {
                         Debug.Log(i +" and "+j);
                         m_massege.SetText(texts[i*2], j);
-                        m_presentManger.CreatePresents(j);
+                        PresentsManager.Instance.CreatePresents(j);
                     }
                 }
             }
@@ -139,9 +137,7 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
     override protected void OnStart()
     {
         base.OnStart();
-        m_presentManger = GameObject.Find("PresentsManager").GetComponent<PresentsManager>();
-        dataManager = GameObject.Find("DataManager").GetComponent<DataManager>();
-        string path = dataManager.GetValues(dataManager.m_OptionData, "TwippyLogAddress");
+        string path = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwippyLogAddress");
         sessionDonationCountTextRocation = path + @"\session_donation_count.txt";
         recentDonatorsTextRocation = path + @"\most_recent_donators.txt";
         if(CheckConfigFolder())

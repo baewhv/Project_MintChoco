@@ -19,10 +19,9 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 
     GameObject optionUI = null;
     Character character;
-    [SerializeField] GameObject SpotLight = null;
-    ChromaKeyManager m_ChromaKeyManager;
-    PresentsManager m_PresentsManger;
+    [SerializeField] GameObject[] SpotLight = null;
     bool canSpotLight = true;
+    int SpotLightSelect = 0;
 
     void GetEmoticonInput()
     {
@@ -34,6 +33,20 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         optionUI = obj;
     }
 
+    void SelectLight()
+    {
+        var Data = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "SelectSpotLight");
+        if (bool.Parse(Data))
+        {
+            
+            SpotLightSelect = 1;
+        }
+        else
+        {
+            SpotLightSelect = 0;
+        }
+    }
+
     override protected void OnStart()
     {
         base.OnStart();
@@ -42,13 +55,12 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         LightKey = KeyCode.L;
         CromakeyMode = KeyCode.Semicolon;
         GetEmoticonInput();
-        SpotLight.SetActive(false);
+        SpotLight[0].SetActive(false);
+        SpotLight[1].SetActive(false);
         character = GameObject.Find("Character").GetComponent<Character>();
-        m_ChromaKeyManager = GameObject.Find("ChromakeyManager").GetComponent<ChromaKeyManager>();
-        m_PresentsManger = GameObject.Find("PresentsManager").GetComponent<PresentsManager>();
     }
 
-    public static void ResetApplication()
+    public void ResetApplication()
     {
         UnityEngine.SceneManagement.SceneManager.LoadScene(0);
     }
@@ -59,8 +71,8 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         optionUI.SetActive(false);
 
         character.ReplayMovement();
-        SpotLight.SetActive(false);
-        m_PresentsManger.testDropPresent = true;
+        SpotLight[SpotLightSelect].SetActive(false);
+        PresentsManager.Instance.testDropPresent = true;
     }
 
     void OpenOption()
@@ -69,13 +81,13 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         optionUI.SetActive(true);
 
         character.StopMovement();
-        m_PresentsManger.testDropPresent = false;
+        PresentsManager.Instance.testDropPresent = false;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(OptionKey) && !m_ChromaKeyManager.GetisHide())
+        if (Input.GetKeyDown(OptionKey) && !ChromaKeyManager.Instance.GetisHide())
         {
             if (optionUI.activeSelf)
             {
@@ -92,27 +104,30 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         }
         if (Input.GetKeyDown(LightKey) && !optionUI.activeSelf && canSpotLight)
         {
-            if (SpotLight.activeSelf)
+            SelectLight();
+            if (SpotLight[SpotLightSelect].activeSelf)
             {
-                SpotLight.SetActive(false);
+                SpotLight[SpotLightSelect].SetActive(false);
             }
             else
             {
-                SpotLight.SetActive(true);
+                SpotLight[SpotLightSelect].SetActive(true);
             }
         }
         if (Input.GetKeyDown(CromakeyMode))
         {
-            m_ChromaKeyManager.SetChromaKeyMode();
-            if(m_ChromaKeyManager.GetisHide())
+            ChromaKeyManager.Instance.SetChromaKeyMode();
+            if(ChromaKeyManager.Instance.GetisHide())
             {
                 CloseOption();
                 canSpotLight = false;
-                SpotLight.SetActive(false);
+                SpotLight[SpotLightSelect].SetActive(false);
+                character.SetChromaKeyMode();
             }
             else
             {
                 canSpotLight = true;
+                character.DisableChromaKeyMode();
             }
         }
     }

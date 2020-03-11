@@ -69,40 +69,40 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     // Update is called once per frame
     void Update()
     {
-        if (testDropPresent)
+        if (testDropPresent && Input.GetKey(KeyCode.LeftControl))
         {
-            if (Input.GetKeyDown(KeyCode.Keypad1))
+            if (Input.GetKeyDown(KeyCode.Z))
             {
                 CreatePresents(1000);
             }
-            else if (Input.GetKeyDown(KeyCode.Keypad2))
+            else if (Input.GetKeyDown(KeyCode.X))
             {
                 CreatePresents(5000);
             }
-            else if (Input.GetKeyDown(KeyCode.Keypad3))
+            else if (Input.GetKeyDown(KeyCode.C))
             {
                 CreatePresents(10000);
             }
-            else if (Input.GetKeyDown(KeyCode.Keypad4))
+            else if (Input.GetKeyDown(KeyCode.V))
             {
                 CreatePresents(50000);
             }
-            else if (Input.GetKeyDown(KeyCode.Keypad5))
+            else if (Input.GetKeyDown(KeyCode.B))
             {
                 CreatePresents(100000);
             }
-            if (Input.GetKeyDown(KeyCode.P))
+            
+        }
+        if (Input.GetKeyDown(KeyCode.P))
+        {
+            foreach (Present P in m_presentsList)
             {
-                foreach (Present P in m_presentsList)
+                if (P.gameObject.activeSelf)
                 {
-                    if (P.gameObject.activeSelf)
-                    {
-                        P.SetExplosion(new Vector3(m_character.transform.position.x, -5f));
-                    }
+                    P.SetExplosion(new Vector3(m_character.transform.position.x, -5f));
                 }
             }
         }
-
 
     }
 }
