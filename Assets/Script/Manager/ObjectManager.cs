@@ -143,7 +143,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         }
         else
         {
-            spr = Resources.Load<Sprite>(str[(int)FURN_DATA.Spr_Name]);
+            spr = Resources.Load<Sprite>("Texture/Furniture/" + str[(int)FURN_DATA.Spr_Name]);
         }
 
         if (spr != null)

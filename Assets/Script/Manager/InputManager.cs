@@ -16,6 +16,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     KeyCode ResetKey = 0;
     KeyCode LightKey = 0;
     KeyCode CromakeyMode = 0;
+    KeyCode SwitchWeapon = 0;
 
     GameObject optionUI = null;
     Character character;
@@ -54,6 +55,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         ResetKey = KeyCode.F5;
         LightKey = KeyCode.L;
         CromakeyMode = KeyCode.Semicolon;
+        SwitchWeapon = KeyCode.Tab;
         GetEmoticonInput();
         SpotLight[0].SetActive(false);
         SpotLight[1].SetActive(false);
@@ -72,6 +74,8 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 
         character.ReplayMovement();
         SpotLight[SpotLightSelect].SetActive(false);
+        MicManager.Instance.isSpotlightMode = false;
+        LoopbackAudio.Instance.isSpotlightMode = false;
         PresentsManager.Instance.testDropPresent = true;
     }
 
@@ -108,10 +112,14 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             if (SpotLight[SpotLightSelect].activeSelf)
             {
                 SpotLight[SpotLightSelect].SetActive(false);
+                MicManager.Instance.isSpotlightMode = false;
+                LoopbackAudio.Instance.isSpotlightMode = false;
             }
             else
             {
                 SpotLight[SpotLightSelect].SetActive(true);
+                MicManager.Instance.isSpotlightMode = true;
+                LoopbackAudio.Instance.isSpotlightMode = true;
             }
         }
         if (Input.GetKeyDown(CromakeyMode))
@@ -129,6 +137,21 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
                 canSpotLight = true;
                 character.DisableChromaKeyMode();
             }
+        }
+        if (Input.GetKeyDown(SwitchWeapon))
+        {
+            character.SwitchWeapon();
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Vector3 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            int i = 0;
+            if (character.CheckEffect(out i))
+            {
+                EffectManager.Instance.CreateEffect(position, i);
+            }
+            
         }
     }
 }

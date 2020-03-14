@@ -7,9 +7,11 @@ public class Character : MonoBehaviour
     public SpriteRenderer body;
     
     [SerializeField] Sprite[] emotion = null;
-    [SerializeField] GameObject Weapon = null;
+    [SerializeField] SpriteRenderer Weapon = null;
     [SerializeField] float walkSpeed = 10;
     [SerializeField] Vector3 DefaultPosition = Vector3.zero;
+    [SerializeField] Sprite[] WeaponImage = null;
+
     Animator m_anim;
     SpriteRenderer m_Mouth;
     SpriteRenderer m_Eye;
@@ -18,6 +20,8 @@ public class Character : MonoBehaviour
 
     float LeftEndZone = -9.0f;
     float RightEndZone = 9.0f;
+
+    int CurrentWeaponNum = 0;
 
     //bool isWalk = false;
     //bool isTalk = false;
@@ -43,7 +47,7 @@ public class Character : MonoBehaviour
         equipWeapon = false;
         transform.position = DefaultPosition;
         body.sprite = emotion[0];
-        Weapon.SetActive(false);
+        Weapon.gameObject.SetActive(false);
         m_Mouth = transform.Find("Mouth").GetComponent<SpriteRenderer>();
         m_Eye = transform.Find("Eye").GetComponent<SpriteRenderer>();
         m_rigidbody = GetComponent<Rigidbody>();
@@ -96,15 +100,52 @@ public class Character : MonoBehaviour
         if (equipWeapon)
         {
             equipWeapon = false;
-            Weapon.SetActive(false);
+            Weapon.gameObject.SetActive(false);
         }
         else if (!equipWeapon)
         {
             equipWeapon = true;
-            Weapon.SetActive(true);
+            Weapon.gameObject.SetActive(true);
         }
     }
 
+    public void SwitchWeapon()
+    {
+        if (!Weapon.gameObject.activeSelf)
+        {
+            return;
+        }
+        if (WeaponImage.Length > 1)
+        {
+            if (CurrentWeaponNum + 1 > WeaponImage.Length - 1)
+            {
+                CurrentWeaponNum = 0;
+            }
+            else
+            {
+                CurrentWeaponNum++;
+            }
+            Weapon.sprite = WeaponImage[CurrentWeaponNum];
+        }
+    }
+
+    public bool CheckEffect(out int i)
+    {
+        if (!Weapon.gameObject.activeSelf)
+        {
+            i = 0;
+            return false;
+        }
+
+        if(CurrentWeaponNum == 0)
+        {
+            i = 0;
+            return false;
+        }
+
+        i = 1;
+        return true;
+    }
 
     public void StopMovement()
     {

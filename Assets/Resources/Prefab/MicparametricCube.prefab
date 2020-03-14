@@ -94,5 +94,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _band: 0
   _startScale: 0.1
-  _scaleMultiplier: 1
-  _useBuffer: 0
+  _scaleMultiplier: 1.5
+  _useBuffer: 1

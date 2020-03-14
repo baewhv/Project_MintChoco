@@ -223,9 +223,10 @@ MonoBehaviour:
   - {fileID: 21300000, guid: edcb3cc04e7a17741b84e30467734acc, type: 3}
   - {fileID: 21300000, guid: 3b802fb90d0e67e43a7cc1f1da23792c, type: 3}
   - {fileID: 21300000, guid: b3ae20cbfdef439429d3c7c68cbdcf2f, type: 3}
-  Weapon: {fileID: 5377638554472550173}
+  Weapon: {fileID: 5377638554472550175}
   walkSpeed: 10
   DefaultPosition: {x: -3.43, y: -1.86, z: 0}
+  WeaponImage: []
 --- !u!54 &5377638553418895398
 Rigidbody:
   m_ObjectHideFlags: 0

@@ -21,6 +21,9 @@ public class LoopbackAudio : SingletonMonoBehaviour<LoopbackAudio>
 
     #region Public Properties
 
+
+    public bool isSpotlightMode;
+
     public int SpectrumSize;
     public ScalingStrategy ScalingStrategy;
     public float[] SpectrumData;
@@ -142,9 +145,12 @@ public class LoopbackAudio : SingletonMonoBehaviour<LoopbackAudio>
 
     public void Update()
     {
-        MakeFrequencyBands();
-        BandBuffer();
-        CreateAudioBand();
+        if (isSpotlightMode)
+        {
+            MakeFrequencyBands();
+            BandBuffer();
+            CreateAudioBand();
+        }
     }
 
     public void OnApplicationQuit()

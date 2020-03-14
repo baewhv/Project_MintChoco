@@ -7,6 +7,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
 {
     float minValue;
     Dictionary<string, string> MicData;
+    public bool isSpotlightMode = false;
 
     public float GetMinValue()
     {
@@ -25,7 +26,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         DataManager.Instance.SaveValues(DataManager.Instance.m_OtherData, "MicMinValue", strDatas);
         DataManager.Instance.SaveDatas(DataManager.Instance.m_OtherData, DataManager.Instance.otherConfigTXT);
 
-        
+
     }
     void ParseData()
     {
@@ -51,17 +52,6 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
     float[] _samples;
     private float[] _spectrum;
 
-    float[] _freqBand = new float[8];
-    float[] _bandBuffer = new float[8];
-    float[] _bufferDecrease = new float[8];
-    float[] _freqBandHightest = new float[8];
-    public float[] _audioBand = new float[8];
-    public float[] _audioBandBuffer = new float[8];
-    public float _Amplitude, _AmplitudeBuffer;
-    float _AmplitudeHighest;
-    private float _fSample;
-
-
     public bool startMicOnStartup = true;
 
     public bool stopMicrophoneListener = false;
@@ -77,16 +67,30 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
 
     float timeSinceRestart = 0;
 
+    private int loopTime = 10;
+    private int micFreq = 44100;
+    //-------------------------------------------------------------------------------------------------------------
+
+    float[] _freqBand = new float[8];
+    float[] _bandBuffer = new float[8];
+    float[] _bufferDecrease = new float[8];
+    float[] _freqBandHightest = new float[8];
+    public float[] _audioBand = new float[8];
+    public float[] _audioBandBuffer = new float[8];
+    public float _Amplitude, _AmplitudeBuffer;
+    float _AmplitudeHighest;
+    private float _fSample;
+
     private void Start()
     {
         ParseData();
         if (startMicOnStartup)
         {
-            //RestartMicrophoneListener();
+            RestartMicrophoneListener();
             StartMicrophoneListener();
 
             _audio = GetComponent<AudioSource>();
-            _audio.clip = Microphone.Start(null, true, 10, 44100);
+            _audio.clip = Microphone.Start(null, true, loopTime, micFreq);
             _audio.loop = true;
             while (!(Microphone.GetPosition(null) > 0))
             {
@@ -98,16 +102,8 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
             _fSample = AudioSettings.outputSampleRate;
         }
     }
-    public int _countReset = 0;
-    public int _currentPosition;
-    void CountReset()
-    {
-        if (Microphone.GetPosition(null) < _currentPosition)
-        {
-            _countReset++;
-        }
-        _currentPosition = Microphone.GetPosition(null);
-    }
+
+
     private void Update()
     {
         if (stopMicrophoneListener)
@@ -116,24 +112,45 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         }
         if (startMicrophoneListener)
         {
-            //StartMicrophoneListener();
+            StartMicrophoneListener();
         }
 
         stopMicrophoneListener = false;
         startMicrophoneListener = false;
 
         MicrophoneIntoAudioSource(microphoneListenerOn);
-        CountReset();
 
         DisableSound(!disableOutputSound);
 
         loudness = GetAveragedVolume() * sensitivity;
         GetPitch();
 
-        MakeFrequencyBands();
-        BandBuffer();
-        CreateAudioBand();
-        GetAmplitude();
+        CheckDelay();
+        if (isSpotlightMode)
+        {
+            MakeFrequencyBands();
+            BandBuffer();
+            CreateAudioBand();
+            GetAmplitude();
+        }
+    }
+    void CheckDelay()
+    {
+        int delay = Microphone.GetPosition(null) - src.timeSamples;
+        if (delay < 0)
+        {
+            delay += 44100;
+
+        }
+        if (delay > 4410)
+        {
+            int setTime = Microphone.GetPosition(null) - 1500;
+            if (setTime < 0)
+            {
+                setTime += loopTime * micFreq;
+            }
+            src.timeSamples = setTime;
+        }
     }
 
     void BandBuffer()
@@ -152,11 +169,8 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
             }
         }
     }
-
     void MakeFrequencyBands()
     {
-        if (loudness < 0.001)
-            return;
         int count = 0;
         for (int i = 0; i < 8; i++)
         {
@@ -189,7 +203,6 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
             _audioBandBuffer[i] = (_bandBuffer[i] / _freqBandHightest[i]);
         }
     }
-
     void GetAmplitude()
     {
         float _CurrentAplitude = 0;
@@ -272,6 +285,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         RestartMicrophoneListener();
     }
 
+
     public void DisableSound(bool SoundOn)
     {
         float volume = 0;
@@ -307,16 +321,14 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
                 {
 
                 }
-                
                 src.Play();
-                
             }
         }
     }
 
     public float GetDecibels()
     {
-        return loudness * 100;
+        return loudness * 1000;
     }
 }
 
