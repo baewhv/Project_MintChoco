@@ -126,13 +126,10 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         GetPitch();
 
         CheckDelay();
-        if (isSpotlightMode)
-        {
-            MakeFrequencyBands();
-            BandBuffer();
-            CreateAudioBand();
-            GetAmplitude();
-        }
+        MakeFrequencyBands();
+        BandBuffer();
+        CreateAudioBand();
+        GetAmplitude();
     }
     void CheckDelay()
     {
@@ -328,7 +325,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
 
     public float GetDecibels()
     {
-        return loudness * 1000;
+        return loudness * 100;
     }
 }
 

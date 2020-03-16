@@ -780,7 +780,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 536374069}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 6.083184, y: -4.4502544, z: 20.741108}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -815,6 +815,158 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 591bd5c6b6c31e9409ec6aa8f8f3bdff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_presents:
+  - name: "\uCE94\uB514\uBCFC1"
+    m_PresentType: 0
+    m_sprite: {fileID: 21300000, guid: 252c19e0d2601cf4680bd707b2df15b2, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.8, y: 0.8, z: 1}
+  - name: "\uCE94\uB514\uBCFC2"
+    m_PresentType: 0
+    m_sprite: {fileID: 21300000, guid: a56c562fddf641f44a10c5824a0d5f2a, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uCE94\uB514\uBCFC3"
+    m_PresentType: 0
+    m_sprite: {fileID: 21300000, guid: 380dc306b0201a0499913572b0110000, type: 3}
+    m_SpritePos: {x: 0.01, y: 0.01, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uCE94\uB514\uB9C9\uB300"
+    m_PresentType: 2
+    m_sprite: {fileID: 21300000, guid: 99041de54b5798247ba0d33cc16451b4, type: 3}
+    m_SpritePos: {x: 0.07, y: 0.108, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 53.5}
+    m_SpriteSize: {x: 0.8, y: 0.8, z: 1}
+  - name: "\uD329\uCE94\uB5141"
+    m_PresentType: 1
+    m_sprite: {fileID: 21300000, guid: 223de0781e337c0489f8bf5573c22d76, type: 3}
+    m_SpritePos: {x: 0.05, y: -0.05, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: -27}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uD329\uCE94\uB5142"
+    m_PresentType: 1
+    m_sprite: {fileID: 21300000, guid: 811cb50555249244d962767009297a8a, type: 3}
+    m_SpritePos: {x: 0, y: 0.02, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: -44.5}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uD329\uCE94\uB5143"
+    m_PresentType: 2
+    m_sprite: {fileID: 21300000, guid: dd8fd5f3862c3f1459ca22556a6a953a, type: 3}
+    m_SpritePos: {x: 0, y: 0.02, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: -44.5}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uBBFC\uD2B8\uD06C\uB9BC"
+    m_PresentType: 3
+    m_sprite: {fileID: 21300000, guid: 2514a1711ac1a9144981c69204c3f6ce, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.09, y: 0.09, z: 1}
+  - name: "\uC544\uC774\uC2A4\uD06C\uB9BC1"
+    m_PresentType: 3
+    m_sprite: {fileID: 21300000, guid: 52f496e6750d4b142b2d4a7a5d8fa1be, type: 3}
+    m_SpritePos: {x: 0.04, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.4, y: 0.4, z: 1}
+  - name: "\uC544\uC774\uC2A4\uD06C\uB9BC2"
+    m_PresentType: 4
+    m_sprite: {fileID: 21300000, guid: bee57837bb700f6489976e6f81113198, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.8, y: 0.8, z: 1}
+  - name: "\uC544\uC774\uC2A4\uD06C\uB9BC3"
+    m_PresentType: 3
+    m_sprite: {fileID: 21300000, guid: 39408a81a5fedde40a03eb5fbcfebf8e, type: 3}
+    m_SpritePos: {x: 0, y: 0.05, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.9, y: 0.9, z: 1}
+  - name: "\uB9C8\uCE74\uB871"
+    m_PresentType: 4
+    m_sprite: {fileID: 21300000, guid: a69551e644505154491d103f1febbc01, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uBBFC\uD2B8\uC18C\uC2A4"
+    m_PresentType: 3
+    m_sprite: {fileID: 21300000, guid: 3d15be2c434c48f4580a71f476b567ae, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.75, y: 0.75, z: 1}
+  - name: "\uCF5C\uB77C"
+    m_PresentType: 9
+    m_sprite: {fileID: 21300000, guid: 8d25fcd693394bb41a1f1f718caae192, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.8, y: 0.8, z: 1}
+  - name: "\uBBFC\uD2B8\uC170\uC774\uD06C1"
+    m_PresentType: 5
+    m_sprite: {fileID: 21300000, guid: d77c5fbd3f86c64498de61701d84006b, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uBBFC\uD2B8\uC170\uC774\uD06C2"
+    m_PresentType: 5
+    m_sprite: {fileID: 21300000, guid: 3533845b95b9b9b428c4ce6b5a09bbfc, type: 3}
+    m_SpritePos: {x: 0, y: 0.07, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.6, y: 0.6, z: 1}
+  - name: "\uBBFC\uD2B8\uB77C\uB5BC"
+    m_PresentType: 5
+    m_sprite: {fileID: 21300000, guid: edca98358a1f50749917306ece3cc8e3, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.6, y: 0.6, z: 1}
+  - name: "\uCF00\uC7751"
+    m_PresentType: 6
+    m_sprite: {fileID: 21300000, guid: ef30952ccfa499a4ab5ed71bbdbc839c, type: 3}
+    m_SpritePos: {x: 0, y: 0.15, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.5, y: 0.5, z: 1}
+  - name: "\uCF00\uC7752"
+    m_PresentType: 6
+    m_sprite: {fileID: 21300000, guid: cbc751605ae704a4fb59411f02c55f9e, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 1, y: 1, z: 1}
+  - name: "\uBE75\uB5A1\uC774"
+    m_PresentType: 7
+    m_sprite: {fileID: 21300000, guid: 61a1f18947cf01f45992a8e7eef1a4d3, type: 3}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0.4, y: 0.4, z: 1}
+  m_presentGroup:
+  - name: "\uCC9C\uC6D0\uB3C4\uB124"
+    m_price: 1000
+    m_isSame: 0
+    m_presentList: 00000000010000000200000003000000040000000500000006000000
+    m_extractCount: 1
+    m_addPrice: 1000
+  - name: "5\uCC9C\uC6D0\uB3C4\uB124"
+    m_price: 5000
+    m_isSame: 0
+    m_presentList: 0700000008000000090000000a0000000b0000000c000000
+    m_extractCount: 1
+    m_addPrice: 1000
+  - name: "\uB9CC\uC6D0\uB3C4\uB124"
+    m_price: 10000
+    m_isSame: 0
+    m_presentList: 0d0000000e0000000f00000010000000
+    m_extractCount: 1
+    m_addPrice: 10000
+  - name: "5\uB9CC\uC6D0\uB3C4\uB124"
+    m_price: 50000
+    m_isSame: 0
+    m_presentList: 1100000012000000
+    m_extractCount: 1
+    m_addPrice: 0
+  - name: "10\uB9CC\uC6D0\uB3C4\uB124"
+    m_price: 100000
+    m_isSame: 0
+    m_presentList: 13000000
+    m_extractCount: 1
+    m_addPrice: 0
   dropPosition: {fileID: 47218394}
   testDropPresent: 1
 --- !u!4 &549412488

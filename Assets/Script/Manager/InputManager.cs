@@ -151,7 +151,6 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             {
                 EffectManager.Instance.CreateEffect(position, i);
             }
-            
         }
     }
 }

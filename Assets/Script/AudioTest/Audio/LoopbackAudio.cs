@@ -39,12 +39,6 @@ public class LoopbackAudio : SingletonMonoBehaviour<LoopbackAudio>
     public float ThresholdToMax;
     public float MaxAmount;
 
-    float[] _freqBand = new float[8];
-    float[] _bandBuffer = new float[8];
-    float[] _bufferDecrease = new float[8];
-    float[] _freqBandHightest = new float[8];
-    public float[] _audioBand = new float[8];
-    public float[] _audioBandBuffer = new float[8];
 
     #endregion
 
@@ -143,15 +137,7 @@ public class LoopbackAudio : SingletonMonoBehaviour<LoopbackAudio>
         _realtimeAudio.StartListen();
     }
 
-    public void Update()
-    {
-        if (isSpotlightMode)
-        {
-            MakeFrequencyBands();
-            BandBuffer();
-            CreateAudioBand();
-        }
-    }
+
 
     public void OnApplicationQuit()
     {
@@ -212,6 +198,14 @@ public class LoopbackAudio : SingletonMonoBehaviour<LoopbackAudio>
 
     #endregion
 
+
+    float[] _freqBand = new float[8];
+    float[] _bandBuffer = new float[8];
+    float[] _bufferDecrease = new float[8];
+    float[] _freqBandHightest = new float[8];
+    public float[] _audioBand = new float[8];
+    public float[] _audioBandBuffer = new float[8];
+
     void BandBuffer()
     {
         for (int g = 0; g < 8; ++g)
@@ -261,6 +255,16 @@ public class LoopbackAudio : SingletonMonoBehaviour<LoopbackAudio>
             }
             _audioBand[i] = (_freqBand[i] / _freqBandHightest[i]);
             _audioBandBuffer[i] = (_bandBuffer[i] / _freqBandHightest[i]);
+        }
+    }
+
+    public void Update()
+    {
+        if (isSpotlightMode)
+        {
+            MakeFrequencyBands();
+            BandBuffer();
+            CreateAudioBand();
         }
     }
 }

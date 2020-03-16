@@ -16,7 +16,7 @@ public class EffectManager : SingletonMonoBehaviour<EffectManager>
             return;
         }
         var _effect = m_EffectPool.pop();
-        _effect.transform.position = new Vector3(Pos.x, Pos.y, 5);
+        _effect.transform.position = new Vector3(Pos.x, Pos.y, -10);
         _effect.gameObject.SetActive(true);
         _effect.SetTimer(5);
         m_effectList.Add(_effect);
