@@ -17,10 +17,10 @@ public class FurnitureUI : MonoBehaviour
    
     
 
-    public int GetfurnitureListCount()
-    {
-        return furnitureList.Count;
-    }
+    //public int GetfurnitureListCount()
+    //{
+    //    return furnitureList.Count;
+    //}
 
 
     public void CreateFurniture()
@@ -105,7 +105,7 @@ public class FurnitureUI : MonoBehaviour
         obj.transform.SetParent(m_furnitureList.transform);
         obj.transform.localScale = Vector3.one;
         obj.name = "캐릭터";
-        Sprite spr = Resources.Load<Sprite>("Character/Test2");
+        Sprite spr = Resources.Load<Sprite>("Texture/BBangDDuck");
         obj.GetComponent<Furniture_List>().SetPanel(obj.name , spr);
         obj.GetComponent<Furniture_List>().UpButton.interactable = false;
         obj.GetComponent<Furniture_List>().DownButton.interactable = false;
@@ -224,7 +224,7 @@ public class FurnitureUI : MonoBehaviour
     {
         m_furnitureIcon = Resources.Load("Prefab/UI/Furniture_Icon") as GameObject;
         m_furniturelist = Resources.Load("Prefab/UI/Furniture_List") as GameObject;
-        m_addFurniture = Resources.Load("Prefab/UI/Furniture_Add") as GameObject;
+        m_addFurniture = Resources.Load("Prefab/UI/OptionList_Add") as GameObject;
         m_furnitureGrid.gameObject.SetActive(false);
         m_furnitureList.gameObject.SetActive(false);
         SetFurniturePannel();

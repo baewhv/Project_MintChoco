@@ -36,8 +36,10 @@ public class Furniture_Config : MonoBehaviour
 
     public void SetConfig(GameObject target)
     {
+        //컨픽 창 선택
         configFurniture.SetActive(true);
         addFurniture.SetActive(false);
+
         targetObject = target;
         Icon.sprite = targetObject.GetComponent<Image>().sprite;
         RectTransform rt = (RectTransform)Icon.transform;

@@ -112,6 +112,16 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         });
     }
 
+    public void SavePresentGroupData(PresentGroup obj)
+    {
+
+    }
+
+    public void AddPresentGroupData(PresentGroup obj)
+    {
+
+    }
+
     private void OnDrawGizmosSelected()
     {
         Gizmos.color = Color.red;

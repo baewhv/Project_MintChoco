@@ -18,8 +18,14 @@ public class PresentInfo
         Big,    //cake
         Huge,
         Long_Coke
-            
     }
+    public enum PRESENT_DATA
+    {
+        Default,
+        AddObject
+    }
+
+
 #if UNITY_EDITOR
     public string name;
 #endif
@@ -28,4 +34,5 @@ public class PresentInfo
     public Vector3 m_SpritePos;
     public Vector3 m_SpriteRot;
     public Vector3 m_SpriteSize;
+    public PRESENT_DATA m_PresentData;
 }

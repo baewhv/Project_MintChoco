@@ -15,9 +15,8 @@ public class OptionUI : MonoBehaviour
     GameObject m_optionPrefab_Check = null;
     [SerializeField] VerticalLayoutGroup m_optionGrid = null;
 
-    [SerializeField] Toggle donateToggle = null;
-    [SerializeField] GameObject donateUI = null;
-    List<GameObject> donateList = new List<GameObject>();
+    [SerializeField] Toggle presentToggle = null;
+    [SerializeField] PresentUI presentUI = null;
 
     [SerializeField] Toggle furnitureToggle = null;
     [SerializeField] FurnitureUI furnitureUI = null;
@@ -58,21 +57,18 @@ public class OptionUI : MonoBehaviour
             settingUI.SetActive(false);
         }
     }
-    public void ToggleDonateUI()
+    public void TogglePresentUI()
     {
-        if (donateToggle.isOn)
+        if (presentToggle.isOn)
         {
-            donateUI.SetActive(true);
-            //if (optionList.Count == 0)
-            //{
-            //    CreateOptions();
-
-            //}
-            //SetOptions();
+            presentUI.gameObject.SetActive(true);
+            presentUI.SetPresentGroupPannel();
+            presentUI.CreatePresentsGroup();
         }
         else
         {
-            donateUI.SetActive(false);
+            presentUI.ClearList();
+            presentUI.gameObject.SetActive(false);
         }
     }
     public void ToggleFurnitureUI()
@@ -173,7 +169,7 @@ public class OptionUI : MonoBehaviour
     {
         logUI.gameObject.SetActive(true);
         settingUI.SetActive(false);
-        donateUI.SetActive(false);
+        presentUI.gameObject.SetActive(false);
         furnitureUI.gameObject.SetActive(false);
         emoticonUI.gameObject.SetActive(false);
         micUI.gameObject.SetActive(false);
