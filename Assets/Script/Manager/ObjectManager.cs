@@ -51,7 +51,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
             string[] str = obj.Value.Split('&');
             if (str.Length <= 1 || str.Length != (int)FURN_DATA.Max)
             {
-                Debug.Log("check this");
+                //Debug.Log("check this");
                 ErrorList.Add(obj.Key, "");
             }
             else

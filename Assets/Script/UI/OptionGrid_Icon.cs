@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class Furnituer_Item : MonoBehaviour
+public class OptionGrid_Icon : MonoBehaviour
 {
     string KeyValue;
     [SerializeField] Image Icon = null;
     public GameObject LinkedObject;
+    public PresentInfo PresentInfo;
 
 
     public void SetPanel(string name, GameObject obj)
@@ -15,20 +16,24 @@ public class Furnituer_Item : MonoBehaviour
         KeyValue = name;
         LinkedObject = obj;
         Icon.sprite = LinkedObject.GetComponent<Image>().sprite;
-        RectTransform rt = (RectTransform)Icon.transform;
-        if(Icon.sprite.rect.size.x> Icon.sprite.rect.size.y)
-        {
-            rt.sizeDelta = new Vector2(100, (Icon.sprite.rect.size.y / Icon.sprite.rect.size.x) * 100);
-        }
-        else
-        {
-            rt.sizeDelta = new Vector2((Icon.sprite.rect.size.x / Icon.sprite.rect.size.y) * 100,  100);
-        }
+        SetSprite();
     }
     public void SetPanel(Sprite spr)
     {
         KeyValue = "furniture_" + spr.name;
         Icon.sprite = spr;
+        SetSprite();
+    }
+
+    public void SetPanel(PresentInfo PI)
+    {
+        PresentInfo = PI;
+        Icon.sprite = PresentInfo.m_sprite;
+        SetSprite();
+    }
+
+    void SetSprite()
+    {
         RectTransform rt = (RectTransform)Icon.transform;
         if (Icon.sprite.rect.size.x > Icon.sprite.rect.size.y)
         {

@@ -62,7 +62,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.19607843}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -134,9 +134,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Icon: {fileID: 226078484931746703}
   objName: {fileID: 3286078851774907076}
-  UpButton: {fileID: 0}
-  DownButton: {fileID: 0}
-  LinkedObject: {fileID: 0}
+  m_PresentGroup:
+    name: 
+    m_price: 0
+    m_isSame: 0
+    m_presentList: 
+    m_extractCount: 0
+    m_addPrice: 0
+    m_GroupData: 0
 --- !u!1 &3286078851774907074
 GameObject:
   m_ObjectHideFlags: 0

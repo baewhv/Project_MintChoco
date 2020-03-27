@@ -8,15 +8,21 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     public PresentInfo[] m_presents;
     public PresentGroup[] m_presentGroup;
 
+
+    int addedGroupNum = 0;
+
+    public List<PresentInfo> m_presentsDataList = new List<PresentInfo>();
+    public List<PresentGroup> m_presentGroupList = new List<PresentGroup>();
+
     //objectPool
     List<Present> m_presentsList = new List<Present>();
     GameObjectPool<Present> m_PresentsPool;
-    GameObject m_present;
+    GameObject m_presentPrefab;
 
 
     GameObject m_character;
     [SerializeField] Transform dropPosition = null;
-
+    #region DropPresentFunction
     public bool testDropPresent = true;
 
     public void RemovePresents(Present present)
@@ -33,6 +39,10 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         if (value >= 1000)
         {
             PresentGroup selectGroup = SelectPresentGroup(value);
+            if(selectGroup == null)
+            {
+                return;
+            }
             //check drop type ->비용에 맞춰 어떤 그룹을 선택할지.
             int addExtract = 1;
             if (selectGroup.m_addPrice != 0)
@@ -44,7 +54,6 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             for(int  i= 0; i < dropCount; i++)
             {
                 int randCount = Random.Range(0, selectGroup.m_presentList.Length);
-                Debug.Log(randCount);
                 CreatePresent(m_presents[selectGroup.m_presentList[randCount]]);
             }
 
@@ -53,22 +62,22 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     public PresentGroup SelectPresentGroup(int value)
     {
         PresentGroup select = null;
-        for(int i = 0; i < m_presentGroup.Length; i++)
+        for(int i = 0; i < m_presentGroupList.Count; i++)
         {
-            if(m_presentGroup[i].m_price == value && m_presentGroup[i].m_isSame)
+            if(m_presentGroupList[i].m_price == value && m_presentGroupList[i].m_isSame)
             {
-                return m_presentGroup[i];
+                return m_presentGroupList[i];
             }
-            else if (m_presentGroup[i].m_price <= value)
+            else if (m_presentGroupList[i].m_price <= value)
             {
                 if (select == null)
                 {
-                    select = m_presentGroup[i];
+                    select = m_presentGroupList[i];
                     continue;
                 }
-                if (select.m_price < m_presentGroup[i].m_price)
+                if (select.m_price < m_presentGroupList[i].m_price)
                 {
-                    select = m_presentGroup[i];
+                    select = m_presentGroupList[i];
                 }
             }
         }
@@ -94,15 +103,25 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         return new Vector3(posX, posY, dropPosition.localPosition.z);
     }
 
-    
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(new Vector3(dropPosition.position.x, dropPosition.position.y - dropPosition.localScale.y * 5), new Vector3(dropPosition.localScale.x, dropPosition.localScale.y * 10));
+    }
+
+
+    #endregion
+
+
     override protected void OnStart()
     {
         base.OnStart();
+        GetDatas();
         m_character = GameObject.Find("Character");
-        m_present = Resources.Load("Prefab/Present/Present") as GameObject;
+        m_presentPrefab = Resources.Load("Prefab/Present/Present") as GameObject;
         m_PresentsPool = new GameObjectPool<Present>(5, () =>
         {
-            var obj = Instantiate(m_present) as GameObject;
+            var obj = Instantiate(m_presentPrefab) as GameObject;
             obj.SetActive(false);
             obj.transform.SetParent(transform);
             obj.transform.localScale = Vector3.one;
@@ -112,21 +131,35 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         });
     }
 
+    #region PresentDataFunction
+    void GetDatas()
+    {
+        foreach (KeyValuePair<string, string> obj in DataManager.Instance.m_PresentGroupData)
+        {
+            var _obj = new Dictionary<string,string>();
+            Util.ParseDictionary(obj.Value , out _obj);
+            var newOjb = new PresentGroup(obj.Key, _obj);
+            m_presentGroupList.Add(newOjb);
+        }
+    }
+
     public void SavePresentGroupData(PresentGroup obj)
     {
-
+        DataManager.Instance.SaveValues(DataManager.Instance.m_PresentGroupData, obj.m_key, obj.ReturnValue());
+        DataManager.Instance.SaveDatas(DataManager.Instance.m_PresentGroupData, DataManager.Instance.PresentGroupConfigTXT);
     }
-
     public void AddPresentGroupData(PresentGroup obj)
     {
-
+        DataManager.Instance.AddValues(DataManager.Instance.m_PresentGroupData, "presentGroup_add_" + addedGroupNum, obj.ReturnValue());
+        DataManager.Instance.SaveDatas(DataManager.Instance.m_PresentGroupData, DataManager.Instance.PresentGroupConfigTXT);
     }
-
-    private void OnDrawGizmosSelected()
+    public void DeletePresentGroupData(PresentGroup obj)
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(new Vector3(dropPosition.position.x, dropPosition.position.y - dropPosition.localScale.y * 5), new Vector3(dropPosition.localScale.x, dropPosition.localScale.y * 10));
+        DataManager.Instance.DeleteValue(DataManager.Instance.m_FurnitureData, obj.m_key);
+        DataManager.Instance.SaveDatas(DataManager.Instance.m_PresentGroupData, DataManager.Instance.PresentGroupConfigTXT);
     }
+
+    #endregion
 
     // Update is called once per frame
     void Update()

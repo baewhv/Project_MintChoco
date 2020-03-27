@@ -8,16 +8,20 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
 {
     public Dictionary<string, string> m_OptionData = new Dictionary<string, string>();
     public Dictionary<string, string> m_FurnitureData = new Dictionary<string, string>();
+    public Dictionary<string, string> m_PresentGroupData = new Dictionary<string, string>();
+    public Dictionary<string, string> m_PresentInfoData = new Dictionary<string, string>();
     public Dictionary<string, string> m_OtherData = new Dictionary<string, string>();
     public string optionConfigTXT = @"\Config.txt";
     public string otherConfigTXT = @"\ETC.txt";
     public string furnitureConfigTXT = @"\Config_furniture.txt";
+    public string PresentGroupConfigTXT = @"\Config_PresentGroup.txt";
+    public string PresentInfoConfigTXT = @"\Config_PresentInfo.txt";
     LogUI m_massege;
 
     public void CreateDefaultData()
     {
         CheckData(m_OptionData, "TwippyLogAddress", @"C:\Users\YourName\AppData\Roaming\Twippy\userdata");
-        CheckData(m_OptionData, "TwipWssAddress", "wss://twip.kr/");
+        CheckData(m_OptionData, "TwipWssAddress", "AAAAAAAAAA");
         CheckData(m_OptionData, "ToonationAddress", "wss://toonation.kr/");
         CheckData(m_OptionData, "SelectSpotLight", "False");
         SaveDatas(m_OptionData, optionConfigTXT);
@@ -34,7 +38,14 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         CheckData(m_FurnitureData, "Furniture_ChatArea", "ChatArea&550&-225&780&540&true&1&550&-225&780&540&true&1&채팅창&1");
         CheckData(m_FurnitureData, "Furniture_StandMic", "StandMic&-746&-161&450&450&True&2&-746&-161&450&450&True&2&마이크&1");
         SaveDatas(m_FurnitureData, furnitureConfigTXT);
-        
+
+        CheckData(m_PresentGroupData, "presentGroup_0", "name:기본 도네1&price:1000&isSame:False&extractCount:1&addPrice:1000&groupData:0&presentList:0,1,2,3,4,5,6");
+        CheckData(m_PresentGroupData, "presentGroup_1", "name:기본 도네2&price:5000&isSame:False&extractCount:1&addPrice:1000&groupData:0&presentList:7,8,9,10,11,12");
+        CheckData(m_PresentGroupData, "presentGroup_2", "name:기본 도네3&price:10000&isSame:False&extractCount:1&addPrice:10000&groupData:0&presentList:13,14,15,16");
+        CheckData(m_PresentGroupData, "presentGroup_3", "name:기본 도네4&price:50000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:17,18");
+        CheckData(m_PresentGroupData, "presentGroup_4", "name:기본 도네5&price:100000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:19");
+        SaveDatas(m_PresentGroupData, PresentGroupConfigTXT);
+        //SaveDatas(m_PresentInfoData, PresentInfoConfigTXT);
     }
 
     void CheckData(Dictionary<string, string> data, string key, string value)
@@ -197,6 +208,8 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         ReadData(m_OptionData, optionConfigTXT);
         ReadData(m_FurnitureData, furnitureConfigTXT);
         ReadData(m_OtherData, otherConfigTXT);
+        ReadData(m_PresentGroupData, PresentGroupConfigTXT);
+        //ReadData(m_PresentInfoData, PresentInfoConfigTXT);
 
         CreateDefaultData();
     }

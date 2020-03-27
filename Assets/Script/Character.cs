@@ -13,13 +13,19 @@ public class Character : MonoBehaviour
     [SerializeField] Sprite[] WeaponImage = null;
 
     Animator m_anim;
-    SpriteRenderer m_Mouth;
-    SpriteRenderer m_Eye;
+    [SerializeField] SpriteRenderer m_Mouth = null;
+    [SerializeField] SpriteRenderer m_Eye = null;
+    [SerializeField] GameObject spine = null;
+
+    IEnumerator SDown;
+    IEnumerator SUp;
 
     MicManager Mic;
 
     float LeftEndZone = -9.0f;
     float RightEndZone = 9.0f;
+    [SerializeField] float SpineSpeed = 0;
+    [SerializeField] float SpineSlowSpeed = 10;
 
     int CurrentWeaponNum = 0;
 
@@ -31,8 +37,11 @@ public class Character : MonoBehaviour
     bool equipWeapon;
     bool canEmoticon;
     bool canBlink;
+    bool isBurrow;
+    bool canBurrow;
 
     Vector3 m_dir = Vector3.zero;
+    Vector3 m_spineDir = Vector3.zero;
 
     Rigidbody m_rigidbody;
 
@@ -45,11 +54,11 @@ public class Character : MonoBehaviour
         canBlink = true;
         canEmoticon = true;
         equipWeapon = false;
+        isBurrow = false;
+        canBurrow = true;
         transform.position = DefaultPosition;
         body.sprite = emotion[0];
         Weapon.gameObject.SetActive(false);
-        m_Mouth = transform.Find("Mouth").GetComponent<SpriteRenderer>();
-        m_Eye = transform.Find("Eye").GetComponent<SpriteRenderer>();
         m_rigidbody = GetComponent<Rigidbody>();
         GameObject micGO = GameObject.Find("MicManager");
         Mic = micGO.GetComponent<MicManager>();
@@ -88,7 +97,7 @@ public class Character : MonoBehaviour
         }
     }
 
-    
+
     void Jump()
     {
         
@@ -164,8 +173,11 @@ public class Character : MonoBehaviour
     {
         canMove = false;
         canJump = false;
+        canBurrow = false;
         equipWeapon = true;
         SetWeapon();
+        spine.transform.localPosition = Vector3.zero;
+        m_spineDir = Vector3.zero;
         if (body.flipX)
         {
             Weapon.GetComponent<SpriteRenderer>().flipX = false;
@@ -181,6 +193,7 @@ public class Character : MonoBehaviour
     }
     public void DisableChromaKeyMode()
     {
+        canBurrow = true;
         ReplayMovement();
         m_rigidbody.useGravity = true;
         transform.position = DefaultPosition;
@@ -232,7 +245,7 @@ public class Character : MonoBehaviour
             m_dir = Vector3.zero;
         }
 
-        if (0 < Input.GetAxisRaw("Vertical") && canJump && m_rigidbody.velocity.y >= 0 && canMove && !Input.GetKeyDown(KeyCode.Semicolon))
+        if (0 < Input.GetAxisRaw("Vertical") && canJump && m_rigidbody.velocity.y >= 0 && canMove && !Input.GetKeyDown(KeyCode.Semicolon) && spine.transform.localPosition.y == 0)
         {
             Jump();
         }
@@ -240,6 +253,34 @@ public class Character : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.E))
         {
             SetWeapon();
+        }
+
+        if(Input.GetKeyDown(KeyCode.Home) && !isBurrow)
+        {
+            isBurrow = true;
+            m_spineDir = Vector3.up;
+        }
+        if (Input.GetKeyDown(KeyCode.End) && !isBurrow)
+        {
+            isBurrow = true;
+            m_spineDir = Vector3.down;
+        }
+
+        if (Input.GetKey(KeyCode.PageUp) && canBurrow && !isBurrow)
+        {
+            m_spineDir = Vector3.up;
+        }
+        else if(Input.GetKeyUp(KeyCode.PageUp) && !isBurrow)
+        {
+            m_spineDir = Vector3.zero;
+        }
+        if (Input.GetKeyDown(KeyCode.PageDown) && canBurrow && !isBurrow)
+        {
+            m_spineDir = Vector3.down;
+        }
+        else if (Input.GetKeyUp(KeyCode.PageDown) && !isBurrow)
+        {
+            m_spineDir = Vector3.zero;
         }
 
     }
@@ -321,7 +362,7 @@ public class Character : MonoBehaviour
         M_Input();
         M_EmoticonInput();
         MicInput();
-        if (!canJump)
+        if (!canJump )
         {
             if (m_rigidbody.velocity.y < 0)
             {
@@ -331,6 +372,35 @@ public class Character : MonoBehaviour
         if ((transform.position + walkSpeed * m_dir * Time.deltaTime).x < RightEndZone && (transform.position + walkSpeed * m_dir * Time.deltaTime).x > LeftEndZone && canMove)
         {
             transform.position += walkSpeed * m_dir * Time.deltaTime;
+        }
+
+        if (canBurrow)
+        {
+            float _speed = 0;
+            if(isBurrow)
+            {
+                _speed = SpineSpeed;
+            }
+            else
+            {
+                _speed = SpineSlowSpeed;
+            }
+            if ((spine.transform.localPosition + (_speed * m_spineDir * Time.deltaTime)).y > 0 )
+            {
+                spine.transform.localPosition = Vector3.zero;
+                isBurrow = false;
+                m_spineDir = Vector3.zero;
+            }
+            else if ((spine.transform.localPosition + (_speed * m_spineDir * Time.deltaTime)).y < -7)
+            {
+                spine.transform.localPosition = Vector3.down * 7;
+                isBurrow = false;
+                m_spineDir = Vector3.zero;
+            }
+            else
+            {
+                spine.transform.position += _speed * m_spineDir * Time.deltaTime;
+            }
         }
     }
 }

@@ -67,7 +67,7 @@ public class OptionUI : MonoBehaviour
         }
         else
         {
-            presentUI.ClearList();
+            presentUI.CloseObject();
             presentUI.gameObject.SetActive(false);
         }
     }
@@ -145,6 +145,8 @@ public class OptionUI : MonoBehaviour
             optionList[i].SendMessage("SaveData");
         }
         DataManager.Instance.SaveDatas(DataManager.Instance.m_OptionData, DataManager.Instance.optionConfigTXT);
+        var obj = GameObject.Find("SocketIOManager") as GameObject;
+        obj.GetComponent<SocketIO.SocketIOManager>().CloseWebSocket();
     }
     public void DestroyOptions()
     {

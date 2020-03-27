@@ -37,7 +37,7 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
         return 0;
     }
 
-    int CheckRecentDonateAmountAccessTime()//
+    int CheckRecentDonateAmountAccessTime()
     {
         FileInfo file = new FileInfo(sessionDonationCountTextRocation);
         if (file.Exists)

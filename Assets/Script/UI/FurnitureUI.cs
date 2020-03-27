@@ -84,8 +84,8 @@ public class FurnitureUI : MonoBehaviour
         obj.transform.SetParent(m_furnitureGrid.transform);
         obj.transform.localScale = Vector3.one;
         obj.name = spr.name;
-        obj.GetComponent<Furnituer_Item>().SetPanel(spr);
-        obj.GetComponent<Button>().onClick.AddListener(() => { obj.GetComponent<Furnituer_Item>().OpenFurnitureAdd(m_furnitureConfig, spr); });
+        obj.GetComponent<OptionGrid_Icon>().SetPanel(spr);
+        obj.GetComponent<Button>().onClick.AddListener(() => { obj.GetComponent<OptionGrid_Icon>().OpenFurnitureAdd(m_furnitureConfig, spr); });
         furnitureList.Add(obj);
     }
 
@@ -222,9 +222,9 @@ public class FurnitureUI : MonoBehaviour
 
     void Awake()
     {
-        m_furnitureIcon = Resources.Load("Prefab/UI/Furniture_Icon") as GameObject;
+        m_furnitureIcon = Resources.Load("Prefab/UI/OptionGrid_Icon") as GameObject;
         m_furniturelist = Resources.Load("Prefab/UI/Furniture_List") as GameObject;
-        m_addFurniture = Resources.Load("Prefab/UI/OptionList_Add") as GameObject;
+        m_addFurniture = Resources.Load("Prefab/UI/OptionList_AddIcon") as GameObject;
         m_furnitureGrid.gameObject.SetActive(false);
         m_furnitureList.gameObject.SetActive(false);
         SetFurniturePannel();

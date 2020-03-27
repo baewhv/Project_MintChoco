@@ -17,21 +17,19 @@ public class Furniture_List : MonoBehaviour
         LinkedObject = obj;
         objName.text = obj.GetComponent<FurnitureObject>().GetName();
         Icon.sprite = LinkedObject.GetComponent<Image>().sprite;
-        RectTransform rt = (RectTransform)Icon.transform;
-        if (Icon.sprite.rect.size.x > Icon.sprite.rect.size.y)
-        {
-            rt.sizeDelta = new Vector2(100, (Icon.sprite.rect.size.y / Icon.sprite.rect.size.x) * 100);
-        }
-        else
-        {
-            rt.sizeDelta = new Vector2((Icon.sprite.rect.size.x / Icon.sprite.rect.size.y) * 100, 100);
-        }
+        SetSprite();
         gameObject.SetActive(false);
     }
     public void SetPanel(string _name, Sprite spr)
     {
         objName.text = _name;
         Icon.sprite = spr;
+        SetSprite();
+        gameObject.SetActive(false);
+    }
+
+    void SetSprite()
+    {
         RectTransform rt = (RectTransform)Icon.transform;
         if (Icon.sprite.rect.size.x > Icon.sprite.rect.size.y)
         {
@@ -41,7 +39,6 @@ public class Furniture_List : MonoBehaviour
         {
             rt.sizeDelta = new Vector2((Icon.sprite.rect.size.x / Icon.sprite.rect.size.y) * 100, 100);
         }
-        gameObject.SetActive(false);
     }
 
     public void _OpenFurnitureConfig(GameObject obj)
@@ -54,13 +51,4 @@ public class Furniture_List : MonoBehaviour
         obj.GetComponent<Furniture_Config>().SetAdd(spr);
         obj.SetActive(true);
     }
-
-    //public void _ListUpButton()
-    //{
-
-    //}
-    //public void _ListDownButton()
-    //{
-
-    //}
 }

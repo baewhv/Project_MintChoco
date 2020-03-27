@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 
 
-public class LogUI : MonoBehaviour
+public class LogUI : SingletonMonoBehaviour<LogUI>
 {
     [SerializeField] Text m_Text = null;
 
@@ -18,8 +18,9 @@ public class LogUI : MonoBehaviour
     }
 
     // Start is called before the first frame update
-    void Start()
+    protected override void OnAwake()
     {
+        base.OnAwake();
         if (m_Text != null)
             m_Text.text += "안녕하세요 민초여왕님!" + "\n";
     }

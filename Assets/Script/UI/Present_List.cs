@@ -15,7 +15,8 @@ public class Present_List : MonoBehaviour
         Icon.sprite = PresentsManager.Instance.m_presents[pg.m_presentList[0]].m_sprite;
         RectTransform rt = (RectTransform)Icon.transform;
         m_PresentGroup = pg;
-        objName.text = string.Format("{0}원 {1}도네", m_PresentGroup.m_price, m_PresentGroup.m_isSame ? "" : "이상 "); ;
+        //objName.text = string.Format("{0}원 {1}도네", m_PresentGroup.m_price, m_PresentGroup.m_isSame ? "" : "이상 ");
+        objName.text = pg.m_name;
         if (Icon.sprite.rect.size.x > Icon.sprite.rect.size.y)
         {
             rt.sizeDelta = new Vector2(100, (Icon.sprite.rect.size.y / Icon.sprite.rect.size.x) * 100);
@@ -34,6 +35,7 @@ public class Present_List : MonoBehaviour
         _obj.transform.localScale = Vector3.one;
         ((RectTransform)_obj.transform).sizeDelta = Vector2.zero;
         _obj.GetComponent<Present_Config>().SetPresentGroupConfig(m_PresentGroup);
+        parent.GetComponent<PresentUI>().m_PresentConfigObject = _obj;
         _obj.SetActive(true);
     }
     public void _OpenPresentGroupAdd(GameObject obj)

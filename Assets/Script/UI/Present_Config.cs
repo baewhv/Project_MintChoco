@@ -13,6 +13,7 @@ public class Present_Config : MonoBehaviour
     int beforeExtract = 1;
     int beforePriceValue = 0;
 
+    GameObject m_PresenticonPrefab = null;
 
     List<GameObject> m_itemList = new List<GameObject>();
     [SerializeField] Text m_name = null;
@@ -20,6 +21,7 @@ public class Present_Config : MonoBehaviour
     [SerializeField] Toggle toggleIsSame  = null;
     [SerializeField] InputField inputExtract = null;
     [SerializeField] InputField inputPriceValue = null;
+    [SerializeField] HorizontalLayoutGroup iconGroup = null;
     [SerializeField] Button ApplyButton = null;
     [SerializeField] Button CancelButton = null;
     [SerializeField] Button ResetButton = null;
@@ -33,8 +35,6 @@ public class Present_Config : MonoBehaviour
         //SetConfigListeners();
         ApplyButton.onClick.AddListener(_ApplyConfig);
         CancelButton.onClick.AddListener(_CancelConfig);
-        
-        
         if (target.m_GroupData == PresentGroup.GroupData.Default)
         {
             ResetButton.interactable = true;
@@ -47,10 +47,28 @@ public class Present_Config : MonoBehaviour
             DeleteButton.interactable = true;
             DeleteButton.onClick.AddListener(() => { _DeleteConfig(); });
         }
+        for(int i = 0; i < target.m_presentList.Length; i++)
+        {
+            CreatePresentsIcon(target.m_presentList[i]);
+        }
+
         
         isSetting = true;
+    }
 
+    void CreatePresentsIcon(int _sprNum)
+    {
+        if(m_PresenticonPrefab == null)
+        {
+            SetPrefab();
+        }
+        var obj = Instantiate(m_PresenticonPrefab) as GameObject;
+        obj.transform.SetParent(iconGroup.transform);
+        obj.transform.localScale = Vector3.one;
 
+        obj.GetComponent<OptionGrid_Icon>().SetPanel(PresentsManager.Instance.m_presents[_sprNum]);
+        //obj.GetComponent<Button>().onClick.AddListener(() => { obj.GetComponent<Present_List>()._OpenPresentConfig(m_PresentConfig, gameObject); });
+        m_itemList.Add(obj);
     }
 
     void SetText()  //받은 값 최초 1회 배치.
@@ -59,7 +77,28 @@ public class Present_Config : MonoBehaviour
         toggleIsSame.isOn = m_presentObject.m_isSame;
         inputExtract.text = m_presentObject.m_extractCount.ToString();
         inputPriceValue.text = m_presentObject.m_addPrice.ToString();
-        m_name.text = string.Format("[{0}원 {1}도네] 설정변경", m_presentObject.m_price, m_presentObject.m_isSame ? "" : "이상 "); ;
+        m_name.text = m_presentObject.m_name;
+    }
+
+    void SetText(PresentGroup obj)  //다른 값(초기값 등)을 받을 때 배치용
+    {
+        inputPrice.text = obj.m_price.ToString();
+        toggleIsSame.isOn = obj.m_isSame;
+        inputExtract.text = obj.m_extractCount.ToString();
+        inputPriceValue.text = obj.m_addPrice.ToString();
+        m_name.text = obj.m_name;
+    }
+
+    void ResetText()  //받은 값 최초 1회 배치.
+    {
+        for(int i = 0; i < PresentsManager.Instance.m_presentGroup.Length; i++)
+        {
+            if(PresentsManager.Instance.m_presentGroup[i].m_key == m_presentObject.m_key)
+            {
+                SetText(PresentsManager.Instance.m_presentGroup[i]);
+            }
+        }
+        
     }
 
     void SetBeforeValue()
@@ -70,16 +109,30 @@ public class Present_Config : MonoBehaviour
         beforePriceValue = m_presentObject.m_addPrice;
     }
 
+    void ApplyData()
+    {
+        m_presentObject.m_price = int.Parse(inputPrice.text);
+        m_presentObject.m_isSame = toggleIsSame.isOn;
+        m_presentObject.m_extractCount = int.Parse(inputExtract.text);
+        m_presentObject.m_addPrice = int.Parse(inputPriceValue.text);
+        if (m_presentObject.m_GroupData == PresentGroup.GroupData.AddObject)
+        {
+            m_presentObject.m_name = string.Format("{0}원 {1}도네", m_presentObject.m_price, m_presentObject.m_isSame ? "" : "이상 "); ;
+        }
+    }
+
 
     #region ButtonActions
     public void _ApplyConfig()
     {
+        ApplyData();
         PresentsManager.Instance.SavePresentGroupData(m_presentObject);
-        isSetting = false;
         Destroy(gameObject);
     }
+
     public void _ApplyAddConfig()
     {
+        ApplyData();
         PresentsManager.Instance.AddPresentGroupData(m_presentObject);
         transform.parent.GetComponent<FurnitureUI>().CreateFurniture();
         Destroy(gameObject);
@@ -96,20 +149,28 @@ public class Present_Config : MonoBehaviour
         Destroy(this);
     }
 
-
     public void _ResetState()
     {
-        //m_presentObject.GetComponent<FurnitureObject>().ResetValue();
-
-        SetText();
+        ResetText();
     }
     public void _DeleteConfig()
     {
-        //ObjectManager.Instance.DeleteObject(m_presentObject);
         transform.parent.GetComponent<PresentUI>().CreatePresentsGroup();
         gameObject.SetActive(false);
     }
-#endregion
+    #endregion
+
+    
+    public void Awake()
+    {
+        SetPrefab();
+    }
+
+    public void SetPrefab()
+    {
+        m_PresenticonPrefab = Resources.Load("Prefab/UI/OptionGrid_Icon") as GameObject;
+    }
+
 
 
     public void ValueChanged(string str)

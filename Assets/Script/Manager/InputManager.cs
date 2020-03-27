@@ -122,7 +122,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
                 LoopbackAudio.Instance.isSpotlightMode = true;
             }
         }
-        if (Input.GetKeyDown(CromakeyMode))
+        if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(CromakeyMode))
         {
             ChromaKeyManager.Instance.SetChromaKeyMode();
             if(ChromaKeyManager.Instance.GetisHide())
@@ -140,6 +140,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         }
         if (Input.GetKeyDown(SwitchWeapon))
         {
+            Debug.Log("tap key");
             character.SwitchWeapon();
         }
 
