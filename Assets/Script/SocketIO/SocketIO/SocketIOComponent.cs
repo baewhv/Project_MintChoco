@@ -401,13 +401,20 @@ namespace SocketIO
             foreach (Action<SocketIOEvent> handler in this.handlers[ev.name]) {
 				try{
 					handler(ev);
-                } catch(Exception ex){
-					#if SOCKET_IO_DEBUG
+                }
+                #if SOCKET_IO_DEBUG
+                catch (Exception ex){
+					
 					debugMethod.Invoke(ex.ToString());
-					#endif
-				}
-			}
-		}
+
+                }
+                #endif
+                catch
+                {
+
+                }
+            }
+        }
 
 		private void InvokeAck(Packet packet)
 		{

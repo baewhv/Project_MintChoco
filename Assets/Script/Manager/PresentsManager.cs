@@ -22,6 +22,75 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
 
     GameObject m_character;
     [SerializeField] Transform dropPosition = null;
+
+    #region SocketIO to Donate
+    Dictionary<string, int> m_donateQueue = new Dictionary<string, int>();
+
+    public float startTime = 0.0f;
+    public float delayTime = 10.0f;
+    public bool doDonateToPresent;
+    public int currentDonateQueue = 0;
+
+    public void SetDonateDelayTime(float _delayTime)
+    {
+        if(_delayTime != 0)
+        {
+            delayTime = _delayTime;
+        }
+    }
+    public void AddDonateQueue(string _key, int _value)//통신 중 NewDonate명령이 들어올 때
+    {
+        if (!m_donateQueue.ContainsKey(_key))
+        {
+            m_donateQueue.Add(_key, _value);
+        }
+    }
+    public void DonateSetNow(string _key)//통신 중 Now 명령이 들어올 때
+    {
+        //Debug.Log("나우");
+        SetDonateToPresent(_key);
+    }
+
+    void DonateQueueActive()
+    {
+        if(!doDonateToPresent && m_donateQueue.Count !=0)
+        {
+            Debug.Log("도네받아라");
+            string firstKey = null;
+            foreach(KeyValuePair<string, int> pair in m_donateQueue)
+            {
+                firstKey = pair.Key;
+                break;
+            }
+            SetDonateToPresent(firstKey);
+        }
+
+        if (doDonateToPresent)  //타이머 가동
+        {
+            startTime += Time.deltaTime;
+            if(startTime >= delayTime)
+            {
+                doDonateToPresent = false;
+                startTime = 0.0f;
+            }
+        }
+    }
+
+    void SetDonateToPresent(string _key)
+    {
+        //Debug.Log("키 : " +  _key);
+        if (m_donateQueue.ContainsKey(_key))
+        {
+            //Debug.Log("도네발사");
+            CreatePresents(m_donateQueue[_key]);
+            startTime = 0.0f;
+            doDonateToPresent = true;
+            m_donateQueue.Remove(_key);
+        }
+    }
+    #endregion
+
+
     #region DropPresentFunction
     public bool testDropPresent = true;
 
@@ -112,25 +181,6 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
 
     #endregion
 
-
-    override protected void OnStart()
-    {
-        base.OnStart();
-        GetDatas();
-        m_character = GameObject.Find("Character");
-        m_presentPrefab = Resources.Load("Prefab/Present/Present") as GameObject;
-        m_PresentsPool = new GameObjectPool<Present>(5, () =>
-        {
-            var obj = Instantiate(m_presentPrefab) as GameObject;
-            obj.SetActive(false);
-            obj.transform.SetParent(transform);
-            obj.transform.localScale = Vector3.one;
-            obj.transform.localPosition = Vector3.zero;
-            var presents = obj.GetComponent<Present>();
-            return presents;
-        });
-    }
-
     #region PresentDataFunction
     void GetDatas()
     {
@@ -161,6 +211,30 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
 
     #endregion
 
+    override protected void OnAwake()
+    {
+        base.OnAwake();
+        doDonateToPresent = false;
+    }
+
+    override protected void OnStart()
+    {
+        base.OnStart();
+        GetDatas();
+        m_character = GameObject.Find("Character");
+        m_presentPrefab = Resources.Load("Prefab/Present/Present") as GameObject;
+        m_PresentsPool = new GameObjectPool<Present>(5, () =>
+        {
+            var obj = Instantiate(m_presentPrefab) as GameObject;
+            obj.SetActive(false);
+            obj.transform.SetParent(transform);
+            obj.transform.localScale = Vector3.one;
+            obj.transform.localPosition = Vector3.zero;
+            var presents = obj.GetComponent<Present>();
+            return presents;
+        });
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -186,8 +260,9 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             {
                 CreatePresents(100000);
             }
-            
+
         }
+
         if (Input.GetKeyDown(KeyCode.P))
         {
             foreach (Present P in m_presentsList)
@@ -198,6 +273,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
                 }
             }
         }
-
+        DonateQueueActive();
+        currentDonateQueue = m_donateQueue.Count;
     }
 }

@@ -61,17 +61,17 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
             for (int i = 0; i < Donaters; i++)
             {
                 
-                int j = 0;
-                if(int.TryParse(Regex.Replace(texts[i * 2 + 1], @"\D", ""),out j))
-                {
+                //int j = 0;
+                //if(int.TryParse(Regex.Replace(texts[i * 2 + 1], @"\D", ""),out j))      //IndexOutOfRangeException: Index was outside the bounds of the array.
+                //{
 
-                    if (j >= 1000)
-                    {
-                        Debug.Log(i +" and "+j);
-                        m_massege.SetText(texts[i*2], j);
-                        PresentsManager.Instance.CreatePresents(j);
-                    }
-                }
+                //    if (j >= 1000)
+                //    {
+                //        Debug.Log(i +" and "+j);
+                //        m_massege.SetText(texts[i*2], j);
+                //        PresentsManager.Instance.CreatePresents(j);
+                //    }
+                //}
             }
             sr.Close();
         }

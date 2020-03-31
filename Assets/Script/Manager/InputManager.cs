@@ -122,8 +122,12 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
                 LoopbackAudio.Instance.isSpotlightMode = true;
             }
         }
+#if UNITY_EDITOR
+        if (Input.GetKeyDown(CromakeyMode))
+#else
         if (Input.GetKey(KeyCode.LeftControl) && Input.GetKeyDown(CromakeyMode))
-        {
+#endif
+        { 
             ChromaKeyManager.Instance.SetChromaKeyMode();
             if(ChromaKeyManager.Instance.GetisHide())
             {

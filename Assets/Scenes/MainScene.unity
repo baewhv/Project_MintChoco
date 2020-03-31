@@ -1765,9 +1765,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e6de661a91da6de42ac5495e53489305, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  BackGroundObject: {fileID: 0}
-  ForeGroundObject: {fileID: 0}
-  PresentsManager: {fileID: 0}
 --- !u!1001 &916336301
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2360,11 +2357,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 06c69f471128f2644ac696fbd06590e0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  url: wss://io.mytwip.net/socket.io/?alertbox_key=M6YNNOwdP3&version=1.1.54&EIO=3&transport=websocket
   pingDelay: 25
   reconnectDelay: 5
   donateQueueCount: 0
   doReconnect: 0
+  rightConnection: 0
 --- !u!4 &1383319725
 Transform:
   m_ObjectHideFlags: 0

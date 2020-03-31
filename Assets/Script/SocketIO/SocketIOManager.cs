@@ -64,7 +64,6 @@ namespace SocketIO
             {
                 while (donateQueue.Count > 0)
                 {
-                    Debug.Log("curCount : " + donateQueue.Count);
                     EmitDonate(donateQueue.Dequeue());
                 }
             }
@@ -117,6 +116,7 @@ namespace SocketIO
 
         IEnumerator SendPing_Base(float PingDelay)
         {
+            yield return new WaitForSeconds(5);
             while (ws.IsConnected)
             {
                 if (!rightConnection)
@@ -153,7 +153,7 @@ namespace SocketIO
         private void OnMessage(object sender, MessageEventArgs e)
         {
 #if SOCKET_IO_DEBUG
-            debugMethod.Invoke("[SocketIO] Raw message: " + e.Data);
+            //debugMethod.Invoke("[SocketIO] Raw message: " + e.Data);
 #endif
             Packet packet = decoder.Decode(e);
             if (packet.json != null && packet.socketPacketType == SocketPacketType.EVENT)
@@ -161,14 +161,14 @@ namespace SocketIO
                 try
                 {
                     SocketIOEvent ev = parser.Parse(packet.json);
-                    if (ev.name == "alertbox config" || ev.name == "new donate")
+                    if (ev.name == "alertbox config" || ev.name == "new donate" || ev.name == "now")
                     {
                         lock (donateQueueLock)
                         {
                             try
                             {
                                 donateQueue.Enqueue(ev);
-                                Debug.Log("파싱 성공");
+                                Debug.Log("파싱 성공" + ev.ToString());
                             }
                             catch (Exception ex)
                             {
@@ -223,29 +223,42 @@ namespace SocketIO
             switch (ev.name)
             {
                 case "new donate":
-                    Debug.Log("asdf");
-                    
-                    if (ev.data.HasField("key") )
+                    Debug.Log("socket - new donate");
+                    if (ev.data.HasField("_id"))
                     {
-                        int a = 0;
-                        string name = "";
-                        //ev.data.GetField(ref a, "amount");
-                        ev.data.GetField(ref name, "nickname");
-                        LogUI.Instance.SetText("[Socket]" + name, a);
-                        //PresentsManager.Instance.CreatePresents(a);
-                        Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
-                    }
-                    else
-                    {
-                        int a = 0;
-                        ev.data.GetField(ref a, "amount");
-                        LogUI.Instance.SetText("[Socket]테스트", a);
-                        PresentsManager.Instance.CreatePresents(a);
-                        Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
+                        string _id = "";
+                        ev.data.GetField(ref _id, "_id");
+                        if (_id == "TEST")
+                        {
+                            Debug.Log("이건 테스트 도네입니다.");
+                            int a = 0;
+                            ev.data.GetField(ref a, "amount");
+                            LogUI.Instance.SetText("[Socket]테스트", a);
+                            PresentsManager.Instance.CreatePresents(a);
+                            Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
+                        }
+                        else
+                        {
+                            #if !UNITY_EDITOR
+                            bool isRepeat = false;
+                            ev.data.GetField(ref isRepeat, "repeat");
+                            if (isRepeat)
+                            {
+                                Debug.Log("이건 반복된 도네입니다.");
+                                break;
+                            }
+                            #endif
+                            int a = 0;
+                            string name = "";
+                            ev.data.GetField(ref a, "amount");
+                            ev.data.GetField(ref name, "nickname");
+                            LogUI.Instance.SetText("[Socket]" + name, a);
+                            PresentsManager.Instance.AddDonateQueue(_id, a);
+                            Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
+                        }
                     }
                     break;
                 case "alertbox config":
-                    Debug.Log("이름 테스트");
                     if(ev.data.HasField("name"))
                     {
                         string name = "";
@@ -253,7 +266,6 @@ namespace SocketIO
                         if(name == "mint_luv" || name == "baewhv")
                         {
                             rightConnection = true;
-                            Debug.Log(name);
                         }
                         else
                         {
@@ -261,10 +273,30 @@ namespace SocketIO
                             LogUI.Instance.SetText("연결한 곳의 닉네임 : " +name);
                             CloseWebSocket();
                         }
+                        int alert_delay = 0;
+                        int donation_duration = 0;
+                        ev.data.GetField(ref alert_delay, "alert_delay");
+                        ev.data.GetField(ref donation_duration, "donation_duration");
+                        PresentsManager.Instance.SetDonateDelayTime(alert_delay + donation_duration);
+                    }
+                    break;
+                case "now":
+                    Debug.Log("socket - now");
+                    if (ev.data.HasField("_id"))
+                    {
+                        string _id = "";
+                        ev.data.GetField(ref _id, "_id");
+                        PresentsManager.Instance.DonateSetNow(_id);
+
                     }
                     break;
 
             }
+        }
+
+        private void OnApplicationQuit()
+        {
+            CloseWebSocket();
         }
     }
 }

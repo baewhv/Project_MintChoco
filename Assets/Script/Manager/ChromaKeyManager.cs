@@ -4,9 +4,10 @@ using UnityEngine;
 
 public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
 {
-    [SerializeField] GameObject BackGroundObject;
-    [SerializeField] GameObject ForeGroundObject;
-    [SerializeField] GameObject PresentsManager;
+    GameObject BackGroundObject;
+    GameObject ForeGroundObject;
+    GameObject PresentsManager;
+    GameObject Blinker;
     Character m_Character;
     bool isHide;
 
@@ -22,6 +23,7 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
             BackGroundObject.SetActive(false);
             ForeGroundObject.SetActive(false);
             PresentsManager.SetActive(false);
+            Blinker.SetActive(false);
             m_Character.SetChromaKeyMode();
             isHide = true;
         }
@@ -30,6 +32,7 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
             BackGroundObject.SetActive(true);
             ForeGroundObject.SetActive(true);
             PresentsManager.SetActive(true);
+            Blinker.SetActive(true);
             m_Character.DisableChromaKeyMode();
             isHide = false;
         }
@@ -45,6 +48,7 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
         BackGroundObject = GameObject.Find("BackgroundCanvas");
         ForeGroundObject = GameObject.Find("ForwardCanvas");
         PresentsManager = GameObject.Find("PresentsManager");
+        Blinker = GameObject.Find("Blinker");
 
 
     }
