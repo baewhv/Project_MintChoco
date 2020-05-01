@@ -24,6 +24,8 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         CheckData(m_OptionData, "TwipWssAddress", "AAAAAAAAAA");
         CheckData(m_OptionData, "ToonationAddress", "wss://toonation.kr/");
         CheckData(m_OptionData, "SelectSpotLight", "False");
+        CheckData(m_OptionData, "UseTwippyTXTDonate", "False");
+        CheckData(m_OptionData, "UseTwipSocketDonate", "True");
         SaveDatas(m_OptionData, optionConfigTXT);
         CheckData(m_OtherData, "MicMinValue", "OptionCategory:Mic&Value:40");
         SaveDatas(m_OtherData, otherConfigTXT);
@@ -42,8 +44,10 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         CheckData(m_PresentGroupData, "presentGroup_0", "name:기본 도네1&price:1000&isSame:False&extractCount:1&addPrice:1000&groupData:0&presentList:0,1,2,3,4,5,6");
         CheckData(m_PresentGroupData, "presentGroup_1", "name:기본 도네2&price:5000&isSame:False&extractCount:1&addPrice:1000&groupData:0&presentList:7,8,9,10,11,12");
         CheckData(m_PresentGroupData, "presentGroup_2", "name:기본 도네3&price:10000&isSame:False&extractCount:1&addPrice:10000&groupData:0&presentList:13,14,15,16");
-        CheckData(m_PresentGroupData, "presentGroup_3", "name:기본 도네4&price:50000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:17,18");
-        CheckData(m_PresentGroupData, "presentGroup_4", "name:기본 도네5&price:100000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:19");
+        CheckData(m_PresentGroupData, "presentGroup_3", "name:기본 도네4&price:50000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:20");
+        CheckData(m_PresentGroupData, "presentGroup_4", "name:기본 도네5&price:100000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:21");
+        CheckData(m_PresentGroupData, "presentGroup_5", "name:기본 도네4&price:1001&isSame:True&extractCount:1&addPrice:0&groupData:0&presentList:17,18");
+        CheckData(m_PresentGroupData, "presentGroup_6", "name:기본 도네5&price:1002&isSame:True&extractCount:1&addPrice:0&groupData:0&presentList:19");
         SaveDatas(m_PresentGroupData, PresentGroupConfigTXT);
         //SaveDatas(m_PresentInfoData, PresentInfoConfigTXT);
     }
@@ -135,7 +139,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
             strDatas += "{" + pair.Value + "}\n";
         }
         WriteData(strDatas, saveTXT);
-        Debug.Log("데이터를 저장했습니다." + strDatas);
+        //Debug.Log("데이터를 저장했습니다." + strDatas);
     }
 
     public Sprite SetStreamingImage(string fileName)   //이미 옮겨진 파일.
@@ -148,7 +152,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
             tex.LoadImage(pngBytes);
             Sprite spr = Sprite.Create(tex, new Rect(0.0f, 0.0f, tex.width, tex.height), new Vector2(0.5f, 0.5f), 100.0f);
             spr.name = Path.GetFileNameWithoutExtension(path);
-            Debug.Log("Success to load sprite" + spr.name);
+            //Debug.Log("Success to load sprite" + spr.name);
             return spr;
         }
         else

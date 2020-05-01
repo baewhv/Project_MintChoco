@@ -34,10 +34,13 @@ public class OptionUI : MonoBehaviour
 
     void CreateOptions()
     {
+        CreateOption_Check("Option_UseTwippyTXTDonate", "UseTwippyTXTDonate", "도네 아이템 받기(트위피 텍스트 파일)");
         CreateOption_Password("Option_TwippyAddress", "TwippyLogAddress", "트위피 로그파일 경로", "주소를 입력해 주세요.");
+        CreateOption_Check("Option_UseTwipSocketDonate", "UseTwipSocketDonate", "도네 아이템 받기(트윕 경로)");
         CreateOption_Password("Option_TwipWssAddress", "TwipWssAddress", "트윕 경로", "경로 유출에 주의하세요!");
-        CreateOption_Password("Option_ToonationAddress", "ToonationAddress", "트위피 로그파일 경로", "경로 유출에 주의하세요!");
+        CreateOption_Password("Option_ToonationAddress", "ToonationAddress", "투네이션 경로", "경로 유출에 주의하세요!");
         CreateOption_Check("Option_SelectSpotLight", "SelectSpotLight", "호우! 제대로 놀아보자!");
+
     }
 
     public void ToggleSettingUI()
@@ -145,8 +148,8 @@ public class OptionUI : MonoBehaviour
             optionList[i].SendMessage("SaveData");
         }
         DataManager.Instance.SaveDatas(DataManager.Instance.m_OptionData, DataManager.Instance.optionConfigTXT);
-        var obj = GameObject.Find("SocketIOManager") as GameObject;
-        obj.GetComponent<SocketIO.SocketIOManager>().CloseWebSocket();
+        SocketIO.SocketIOManager.Instance.ResetWebSocket();
+        DonateManager.Instance.ResetDonateManager();
     }
     public void DestroyOptions()
     {

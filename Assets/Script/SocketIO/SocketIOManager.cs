@@ -10,7 +10,7 @@ using WebSocketSharp.Net;
 
 namespace SocketIO
 {
-    public class SocketIOManager : MonoBehaviour
+    public class SocketIOManager : SingletonMonoBehaviour<SocketIOManager>
     {
         string url = "";
         public WebSocket ws;
@@ -19,7 +19,10 @@ namespace SocketIO
         public float reconnectDelay = 5;
         private Parser parser;
         private Decoder decoder;
-        [SerializeField] int donateQueueCount = 0;
+
+        bool startSocketIOManager;
+
+        int gettingMessages = 0;
 
         public bool doReconnect;
         public bool rightConnection;
@@ -34,8 +37,9 @@ namespace SocketIO
 
         IEnumerator TryReconnect;
 
-        public void Awake()
+        protected override void OnAwake()
         {
+            base.OnAwake();
             rightConnection = false;
             parser = new Parser();
             decoder = new Decoder();
@@ -47,16 +51,25 @@ namespace SocketIO
             {
                 debugMethod = Debug.Log;
             }
+            var _useSocketData = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "UseTwipSocketDonate");
+            startSocketIOManager = bool.Parse(_useSocketData);
+            //Debug.Log("start Socket IO Manager : " + startSocketIOManager);
         }
 
-        public void Start()
+        protected override void OnStart()
         {
-            ws.Connect();
-            if (ws.IsConnected)
+            base.OnStart();
+            if (startSocketIOManager)
             {
-                StartCoroutine(SendPing);
+                ws.Connect();
+                if (ws.IsConnected)
+                {
+                    StartCoroutine(SendPing);
+                }
             }
         }
+        //int testnumA = 0;
+        //int testnumB = 0;
 
         public void Update()
         {
@@ -77,27 +90,26 @@ namespace SocketIO
             }
 
             CheckConnection();
-            donateQueueCount = donateQueue.Count;
+
+            //if (Input.GetKeyDown(KeyCode.Keypad1))
+            //{
+            //    PresentsManager.Instance.AddDonateQueue(testnumA.ToString(), 1000,PresentsManager.DONATE_TYPE.Donate);
+            //    testnumA++;
+            //}
+            //if (Input.GetKeyDown(KeyCode.Keypad2))
+            //{
+            //    PresentsManager.Instance.DonateSetNow(testnumB.ToString());
+            //    testnumB++;
+            //}
         }
 
-        void SetWebSocket()
-        {
-            url = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwipWssAddress");
-            url = "wss://io.mytwip.net/socket.io/?alertbox_key="+ url + "&version=1.1.54&EIO=3&transport=websocket";
-            ws = new WebSocket(url);
-            ws.OnOpen += OnOpen;
-            ws.OnMessage += OnMessage;
-            ws.OnError += OnError;
-            ws.OnClose += OnClose;
-        }
-
-        public void CloseWebSocket()
-        {
-            ws.Close();
-        }
 
         void CheckConnection()
         {
+            if (!startSocketIOManager)
+            {
+                return;
+            }
             if (!ws.IsConnected && !doReconnect)
             {
                 Debug.Log("연결 시도");
@@ -105,13 +117,36 @@ namespace SocketIO
                 SendPing = SendPing_Base(pingDelay);
                 StartCoroutine(TryReconnect);
             }
-            else if(ws.IsConnected && doReconnect)
+            else if (ws.IsConnected && doReconnect)
             {
                 doReconnect = false;
                 StopCoroutine(TryReconnect);
                 TryReconnect = TryReconnect_Base(reconnectDelay);
                 StartCoroutine(SendPing);
             }
+        }
+
+        void SetWebSocket()
+        {
+            url = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwipWssAddress");
+            url = "wss://io.mytwip.net/socket.io/?alertbox_key="+ url + "&version=1.1.55&EIO=3&transport=websocket";
+            ws = new WebSocket(url);
+            ws.OnOpen += OnOpen;
+            ws.OnMessage += OnMessage;
+            ws.OnError += OnError;
+            ws.OnClose += OnClose;
+        }
+
+        public void ResetWebSocket()
+        {
+            CloseWebSocket();
+            var _useSocketData = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "UseTwipSocketDonate");
+            startSocketIOManager = bool.Parse(_useSocketData);
+        }
+
+        void CloseWebSocket()
+        {
+            ws.Close();
         }
 
         IEnumerator SendPing_Base(float PingDelay)
@@ -153,7 +188,7 @@ namespace SocketIO
         private void OnMessage(object sender, MessageEventArgs e)
         {
 #if SOCKET_IO_DEBUG
-            //debugMethod.Invoke("[SocketIO] Raw message: " + e.Data);
+            debugMethod.Invoke("[SocketIO] Raw message: " + e.Data);
 #endif
             Packet packet = decoder.Decode(e);
             if (packet.json != null && packet.socketPacketType == SocketPacketType.EVENT)
@@ -161,19 +196,27 @@ namespace SocketIO
                 try
                 {
                     SocketIOEvent ev = parser.Parse(packet.json);
-                    if (ev.name == "alertbox config" || ev.name == "new donate" || ev.name == "now")
+                    //Debug.Log(ev.ToString());
+                    //Debug.Log(ev.name);
+                    if (rightConnection)
+                    {
+                        Debug.Log(ev.ToString());
+                    }
+                    if (ev.name == "alertbox config" || ev.name == "new donate" || ev.name == "now" ||
+                        ev.name == "new sub" || ev.name == "new cheer" || ev.name == "new hosting" ||
+                        ev.name == "media:playing" || ev.name == "media:started")
                     {
                         lock (donateQueueLock)
                         {
                             try
                             {
                                 donateQueue.Enqueue(ev);
-                                Debug.Log("파싱 성공" + ev.ToString());
+                                //Debug.Log("파싱 성공" + ev.ToString());
                             }
                             catch (Exception ex)
                             {
-                                Debug.Log("파싱 실패 : 기타 사유 - " + ex.Message);
-                                Debug.Log("파싱명" + ev.name);
+                                //Debug.Log("파싱 실패 : 기타 사유 - " + ex.Message);
+                                //Debug.Log("파싱명" + ev.name);
                             }
                         }
                     }
@@ -220,42 +263,46 @@ namespace SocketIO
 
         private void EmitDonate(SocketIOEvent ev)
         {
+            gettingMessages++;
+            string _id = "";
+            //Debug.Log(ev.name);
             switch (ev.name)
             {
                 case "new donate":
-                    Debug.Log("socket - new donate");
-                    if (ev.data.HasField("_id"))
+                    ev.data.GetField(ref _id, "_id");
+                    if (_id == "TEST")
                     {
-                        string _id = "";
-                        ev.data.GetField(ref _id, "_id");
-                        if (_id == "TEST")
+                        Debug.Log("이건 테스트 도네입니다.");
+                        int a = 0;
+                        ev.data.GetField(ref a, "amount");
+                        LogUI.Instance.SetText("[Socket]테스트", a);
+                        PresentsManager.Instance.AddDonateQueue(_id, a, PresentsManager.DONATE_TYPE.Donate);
+                        Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
+                    }
+                    else
+                    {
+                        #if !UNITY_EDITOR       
+                        bool isRepeat = false;
+                        ev.data.GetField(ref isRepeat, "repeat");
+                        if (isRepeat)
                         {
-                            Debug.Log("이건 테스트 도네입니다.");
-                            int a = 0;
-                            ev.data.GetField(ref a, "amount");
-                            LogUI.Instance.SetText("[Socket]테스트", a);
-                            PresentsManager.Instance.CreatePresents(a);
-                            Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
+                            Debug.Log("이건 반복된 도네입니다.");
+                            break;
                         }
-                        else
+                        #endif
+                        int a = 0;
+                        string name = "";
+                        ev.data.GetField(ref a, "amount");
+                        ev.data.GetField(ref name, "nickname");
+                        LogUI.Instance.SetText("[Socket]" + name, a);
+                        #if UNITY_EDITOR
+                        if(_id == "")
                         {
-                            #if !UNITY_EDITOR
-                            bool isRepeat = false;
-                            ev.data.GetField(ref isRepeat, "repeat");
-                            if (isRepeat)
-                            {
-                                Debug.Log("이건 반복된 도네입니다.");
-                                break;
-                            }
-                            #endif
-                            int a = 0;
-                            string name = "";
-                            ev.data.GetField(ref a, "amount");
-                            ev.data.GetField(ref name, "nickname");
-                            LogUI.Instance.SetText("[Socket]" + name, a);
-                            PresentsManager.Instance.AddDonateQueue(_id, a);
-                            Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
+                            ev.data.GetField(ref _id, "key");
                         }
+                        #endif
+                        PresentsManager.Instance.AddDonateQueue(_id, a, PresentsManager.DONATE_TYPE.Donate);
+                        Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Donate);
                     }
                     break;
                 case "alertbox config":
@@ -275,22 +322,61 @@ namespace SocketIO
                         }
                         int alert_delay = 0;
                         int donation_duration = 0;
+                        int sub_duration = 0;
+                        int hosting_duration = 0;
+                        int cheer_duration = 0;
                         ev.data.GetField(ref alert_delay, "alert_delay");
                         ev.data.GetField(ref donation_duration, "donation_duration");
-                        PresentsManager.Instance.SetDonateDelayTime(alert_delay + donation_duration);
+                        ev.data.GetField(ref sub_duration, "sub_duration");
+                        ev.data.GetField(ref hosting_duration, "hosting_duration");
+                        ev.data.GetField(ref cheer_duration, "cheer_duration");
+                        PresentsManager.Instance.SetDelayTimes(alert_delay, donation_duration, sub_duration, hosting_duration, cheer_duration);
                     }
                     break;
                 case "now":
-                    Debug.Log("socket - now");
                     if (ev.data.HasField("_id"))
                     {
-                        string _id = "";
                         ev.data.GetField(ref _id, "_id");
                         PresentsManager.Instance.DonateSetNow(_id);
-
+                    }
+                    else if(ev.data.HasField("type"))
+                    {
+                        string dataType = "";
+                        ev.data.GetField(ref dataType, "type");
+                        switch (dataType)
+                        {
+                            case "sub":
+                                Debug.Log("get [Sub] at [Now]");
+                                PresentsManager.Instance.DonateSetNow("sub" , false);
+                                break;
+                            case "hosting":
+                                Debug.Log("get [Hosting] at [Now]");
+                                PresentsManager.Instance.DonateSetNow("hosting", false);
+                                break;
+                            case "cheer":
+                                Debug.Log("get [Cheer] at [Now]");
+                                PresentsManager.Instance.DonateSetNow("cheer", false);
+                                break;
+                        }
                     }
                     break;
-
+                case "new sub":
+                    PresentsManager.Instance.AddDonateQueue("sub" + gettingMessages, 0, PresentsManager.DONATE_TYPE.Sub);
+                    break;
+                case "new cheer":
+                    PresentsManager.Instance.AddDonateQueue("cheer" + gettingMessages, 0, PresentsManager.DONATE_TYPE.Cheer);
+                    break;
+                case "new hosting":
+                    PresentsManager.Instance.AddDonateQueue("hosting" + gettingMessages, 0, PresentsManager.DONATE_TYPE.Hosting);
+                    break;
+                case "media:playing":
+                    int time = 0;
+                    ev.data.GetField(ref time, "duration");
+                    PresentsManager.Instance.AddDonateQueue("media" + gettingMessages, time, PresentsManager.DONATE_TYPE.Media);
+                    break;
+                case "media:started":
+                    PresentsManager.Instance.DonateSetNow("media", false);
+                    break;
             }
         }
 

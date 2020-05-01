@@ -38,7 +38,6 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
     {
         return backCanvas.transform.childCount;
     }
-
     void GetObjectData()
     {
         Dictionary<string, string> ErrorList = new Dictionary<string, string>();
@@ -69,6 +68,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         }
         SetObjectPosition();
     }
+
     public void SaveObjectData(GameObject obj)
     {
         SetTvOptionPosition();
@@ -156,6 +156,10 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
             m_Mornitor = obj;
 
         }
+        if(key == "Furniture_Desk")
+        {
+            obj.GetComponent<FurnitureObject>().viewCamMode = true;
+        }
 
         if (bool.Parse(str[(int)FURN_DATA.order]))
         {
@@ -197,7 +201,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
             {
                 continue;
             }
-            Debug.Log(m_ObjectList[i].name);
+            //Debug.Log(m_ObjectList[i].name);
             DataManager.Instance.DeleteValue(DataManager.Instance.m_FurnitureData, obj.name);
             DataManager.Instance.DeleteSprite(obj.GetComponent<Image>().sprite.name);
             DestroyImmediate(m_ObjectList[i]);
@@ -216,7 +220,6 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
 
     void SetTVonOption()
     {
-        
         var obj = Instantiate(m_OptionPanelPrefab) as GameObject;
         obj.transform.SetParent(foreCanvas.transform);
         obj.transform.localScale = Vector3.one;
@@ -226,8 +229,6 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         InputManager.Instance.SetOptionUI(obj);
         DonateManager.Instance.getTVMessage(obj.GetComponent<OptionUI>().SendTVPanel());
         m_MornitorOption = obj;
-
-
     }
 
     public void SetObjectPosition()
@@ -247,6 +248,8 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         }
         SaveObjectData();
     }
+
+    #region objectSort
 
     public void ObjectMoveUp(GameObject obj)
     {
@@ -299,6 +302,29 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         SaveObjectSiblingPosition();
         SaveObjectData();
     }
+    #endregion
+
+    public void SetCamMode()
+    {
+        for(int i = 0; i < m_ObjectList.Count; i++)
+        {
+            if(m_ObjectList[i].GetComponent<FurnitureObject>().viewCamMode)
+            {
+                m_ObjectList[i].SetActive(true);
+            }
+            else
+            {
+                m_ObjectList[i].SetActive(false);
+            }
+        }
+    }
+    public void DisableCamMode()
+    {
+        for (int i = 0; i < m_ObjectList.Count; i++)
+        {
+            m_ObjectList[i].gameObject.SetActive(true);
+        }
+    }
 
     override protected void OnAwake()
     {
@@ -308,6 +334,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         m_ObjectPrefab = Resources.Load("Prefab/FurniturePrefab") as GameObject;
         m_OptionPanelPrefab = Resources.Load("Prefab/UI/OptionPanel") as GameObject;
     }
+
     protected override void OnStart()
     {
         base.OnStart();

@@ -76,6 +76,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         SpotLight[SpotLightSelect].SetActive(false);
         MicManager.Instance.isSpotlightMode = false;
         LoopbackAudio.Instance.isSpotlightMode = false;
+        PresentsManager.Instance.DisableSpecPresent();
         PresentsManager.Instance.testDropPresent = true;
     }
 
@@ -91,7 +92,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(OptionKey) && !ChromaKeyManager.Instance.GetisHide())
+        if (Input.GetKeyDown(OptionKey) && ChromaKeyManager.Instance.GetisHide() == 0)
         {
             if (optionUI.activeSelf)
             {
@@ -129,7 +130,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 #endif
         { 
             ChromaKeyManager.Instance.SetChromaKeyMode();
-            if(ChromaKeyManager.Instance.GetisHide())
+            if(ChromaKeyManager.Instance.GetisHide() != 0)
             {
                 CloseOption();
                 canSpotLight = false;
@@ -144,7 +145,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         }
         if (Input.GetKeyDown(SwitchWeapon))
         {
-            Debug.Log("tap key");
+            //Debug.Log("tap key");
             character.SwitchWeapon();
         }
 

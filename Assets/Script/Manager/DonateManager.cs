@@ -12,9 +12,13 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
     string sessionDonationCountTextRocation;
     string recentDonatorsTextRocation;
     bool canDonate = false;
+    bool doDonateManager = false;
+    bool startTXTDonateManager = false;
     LogUI m_massege = null;
 
-    
+    IEnumerator CheckDonate;
+
+
     public void getTVMessage(LogUI obj)
     {
         m_massege = obj;
@@ -57,21 +61,44 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
         if (file.Exists)
         {
             TextReader sr = File.OpenText(recentDonatorsTextRocation);
-            string[] texts = sr.ReadToEnd().Split(' ');
-            for (int i = 0; i < Donaters; i++)
+            string firstText = sr.ReadToEnd().Replace("[[\"", "");
+            firstText = firstText.Replace("\"]]", "");
+            firstText = firstText.Replace("\"],[\"", "&");
+            firstText = firstText.Replace("\",\"", "&");
+            Debug.Log("TEXT : " + firstText);
+            string[] texts = firstText.Split('&');
+            if (texts.Length > 1)
             {
-                
-                //int j = 0;
-                //if(int.TryParse(Regex.Replace(texts[i * 2 + 1], @"\D", ""),out j))      //IndexOutOfRangeException: Index was outside the bounds of the array.
-                //{
-
-                //    if (j >= 1000)
-                //    {
-                //        Debug.Log(i +" and "+j);
-                //        m_massege.SetText(texts[i*2], j);
-                //        PresentsManager.Instance.CreatePresents(j);
-                //    }
-                //}
+                for (int i = 0; i < Donaters; i++)
+                {
+                    int j = 0;
+                    if (int.TryParse(Regex.Replace(texts[i * 2 + 1], @"\D", ""), out j))      //IndexOutOfRangeException: Index was outside the bounds of the array.
+                    {
+                        if (j >= 1000)
+                        {
+                            Debug.Log(i + " and " + j);
+                            m_massege.SetText(texts[i * 2], j);
+                            PresentsManager.Instance.CreatePresents(j);
+                        }
+                    }
+                }
+            }
+            else
+            {
+                texts = firstText.Split(' ');
+                for (int i = 0; i < Donaters; i++)
+                {
+                    int j = 0;
+                    if (int.TryParse(Regex.Replace(texts[i * 2 + 1], @"\D", ""), out j))      //IndexOutOfRangeException: Index was outside the bounds of the array.
+                    {
+                        if (j >= 1000)
+                        {
+                            Debug.Log(i + " and " + j);
+                            m_massege.SetText(texts[i * 2], j);
+                            PresentsManager.Instance.CreatePresents(j);
+                        }
+                    }
+                }
             }
             sr.Close();
         }
@@ -102,8 +129,6 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
         canDonate = true;
         return str;
     }
-
-
 
     bool CheckConfigFolder()
     {
@@ -137,22 +162,46 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
     override protected void OnStart()
     {
         base.OnStart();
-        string path = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwippyLogAddress");
-        sessionDonationCountTextRocation = path + @"\session_donation_count.txt";
-        recentDonatorsTextRocation = path + @"\most_recent_donators.txt";
-        if(CheckConfigFolder())
-        {
-            canDonate = true;
-        }
-        SessionDonationCount = ReadSessionDonationCount();
-        RecentDonateAmountTextAccessTime = CheckRecentDonateAmountAccessTime();
-        if(canDonate)
-            StartCoroutine(CheckDonate());
+        doDonateManager = false;
+        ResetDonateManager();
     }
 
-    IEnumerator CheckDonate()
+    public void ResetDonateManager()
     {
-        while(true)
+        if(doDonateManager)
+        {
+            StopCoroutine(CheckDonate);
+            doDonateManager = false;
+        }
+        CheckDonate = CheckDonate_Base();
+        var _useSocketData = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "UseTwippyTXTDonate");
+        startTXTDonateManager = bool.Parse(_useSocketData);
+        InitDonateManager();
+    }
+
+    void InitDonateManager()
+    {
+        if (startTXTDonateManager)
+        {
+            string path = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwippyLogAddress");
+            sessionDonationCountTextRocation = path + @"\session_donation_count.txt";
+            recentDonatorsTextRocation = path + @"\most_recent_donators.txt";
+
+            if (CheckConfigFolder())
+            {
+                canDonate = true;
+            }
+            SessionDonationCount = ReadSessionDonationCount();
+            RecentDonateAmountTextAccessTime = CheckRecentDonateAmountAccessTime();
+            if (canDonate)
+                StartCoroutine(CheckDonate);
+        }
+    }
+
+    IEnumerator CheckDonate_Base()
+    {
+        doDonateManager = true;
+        while (true)
         {
             yield return new WaitForSeconds(0.1f);
             int time = CheckRecentDonateAmountAccessTime();

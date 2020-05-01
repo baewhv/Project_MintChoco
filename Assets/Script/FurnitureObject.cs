@@ -7,12 +7,12 @@ public class FurnitureObject : MonoBehaviour
     private string key;
     private string m_objName;
     private int specific;
+    public bool viewCamMode;
 
     public string GetName()
     {
         return m_objName;
     }
-
 
     public string GetKey()
     {

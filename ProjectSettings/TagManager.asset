@@ -46,3 +46,6 @@ TagManager:
   - name: Blinker
     uniqueID: 204053449
     locked: 0
+  - name: DonateItem
+    uniqueID: 30820727
+    locked: 0

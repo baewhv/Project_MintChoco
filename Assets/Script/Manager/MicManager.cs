@@ -22,7 +22,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
         MicData["Value"] = GetMinValue().ToString();
         string strDatas;
         Util.PackingDictionary(MicData, out strDatas);
-        Debug.Log(strDatas);
+        //Debug.Log(strDatas);
         DataManager.Instance.SaveValues(DataManager.Instance.m_OtherData, "MicMinValue", strDatas);
         DataManager.Instance.SaveDatas(DataManager.Instance.m_OtherData, DataManager.Instance.otherConfigTXT);
 

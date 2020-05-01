@@ -191,8 +191,22 @@ public class Character : MonoBehaviour
         m_rigidbody.velocity = Vector3.zero;
         transform.position = Vector3.zero;
     }
+    public void SetCamBroadMode()
+    {
+        canMove = false;
+        canJump = false;
+        canBurrow = false;
+        equipWeapon = true;
+        spine.transform.localPosition = Vector3.zero;
+        m_dir = Vector3.zero;
+        m_rigidbody.velocity = Vector3.zero;
+        transform.position = Vector3.zero;
+        gameObject.SetActive(false);
+    }
+
     public void DisableChromaKeyMode()
     {
+        gameObject.SetActive(true);
         canBurrow = true;
         ReplayMovement();
         m_rigidbody.useGravity = true;

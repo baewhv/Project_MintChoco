@@ -10,6 +10,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
 
 
     int addedGroupNum = 0;
+    
 
     public List<PresentInfo> m_presentsDataList = new List<PresentInfo>();
     public List<PresentGroup> m_presentGroupList = new List<PresentGroup>();
@@ -24,40 +25,72 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     [SerializeField] Transform dropPosition = null;
 
     #region SocketIO to Donate
-    Dictionary<string, int> m_donateQueue = new Dictionary<string, int>();
+    Dictionary<string, DonateData> m_donateQueue = new Dictionary<string, DonateData>();
 
-    public float startTime = 0.0f;
-    public float delayTime = 10.0f;
-    public bool doDonateToPresent;
-    public int currentDonateQueue = 0;
-
-    public void SetDonateDelayTime(float _delayTime)
+    public enum DONATE_TYPE
     {
-        if(_delayTime != 0)
-        {
-            delayTime = _delayTime;
-        }
+        Donate = 0,
+        Media,
+        Sub,
+        Hosting,
+        Cheer
     }
-    public void AddDonateQueue(string _key, int _value)//통신 중 NewDonate명령이 들어올 때
+
+    public struct DonateData
+    {
+        public int value;
+        public DONATE_TYPE type;
+    }
+
+    float startTime = 0.0f;
+    float delayTime = 10.0f;
+
+    float alertDelayTime = 0.0f;
+    float donationDuration = 0.0f;
+    float subDuration = 0.0f;
+    float hostingDuration = 0.0f;
+    float cheerduration = 0.0f;
+    bool doDonateToPresent;
+
+    int testCurrentQueueCount = 0;
+
+    public void SetDelayTimes(float _alertDelayTime, float _donationDuration, float _subDuration, float _hostingDuration, float _cheerduration)
+    {
+        alertDelayTime = _alertDelayTime;
+        donationDuration = _donationDuration;
+        subDuration = _subDuration;
+        hostingDuration = _hostingDuration;
+        cheerduration = _cheerduration;
+
+    }
+    public void AddDonateQueue(string _key, int _value, DONATE_TYPE _type)//통신 중 NewDonate명령이 들어올 때
     {
         if (!m_donateQueue.ContainsKey(_key))
         {
-            m_donateQueue.Add(_key, _value);
+            DonateData data = new DonateData();
+            data.value = _value;
+            data.type = _type;
+            m_donateQueue.Add(_key, data);
         }
     }
-    public void DonateSetNow(string _key)//통신 중 Now 명령이 들어올 때
+    public void DonateSetNow(string _key, bool _isKey = true)//통신 중 Now 명령이 들어올 때
     {
-        //Debug.Log("나우");
-        SetDonateToPresent(_key);
+        if (_isKey)
+        {
+            SetDonateToPresent(_key);
+        }
+        else
+        {
+            SetDelayToPresent(_key);
+        }
     }
 
     void DonateQueueActive()
     {
-        if(!doDonateToPresent && m_donateQueue.Count !=0)
+        if(!doDonateToPresent && m_donateQueue.Count !=0)   //쿨타임이 되면 자동으로 내보냄.
         {
-            Debug.Log("도네받아라");
             string firstKey = null;
-            foreach(KeyValuePair<string, int> pair in m_donateQueue)
+            foreach(KeyValuePair<string, DonateData> pair in m_donateQueue)
             {
                 firstKey = pair.Key;
                 break;
@@ -78,21 +111,72 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
 
     void SetDonateToPresent(string _key)
     {
-        //Debug.Log("키 : " +  _key);
         if (m_donateQueue.ContainsKey(_key))
         {
-            //Debug.Log("도네발사");
-            CreatePresents(m_donateQueue[_key]);
+            //Debug.Log("!make Present" + _key);
+            CreatePresents(m_donateQueue[_key].value);
             startTime = 0.0f;
+            SetOptions(m_donateQueue[_key].type, m_donateQueue[_key].value);
             doDonateToPresent = true;
             m_donateQueue.Remove(_key);
         }
     }
+    void SetDelayToPresent(string _key)
+    {
+        string firstKey = null;
+        foreach (KeyValuePair<string, DonateData> pair in m_donateQueue)
+        {
+            if (pair.Key.Contains(_key))
+            {
+                firstKey = pair.Key;
+                break;
+            }
+        }
+        if(firstKey != null)
+        {
+            SetDonateToPresent(firstKey);
+        }
+    }
+
+    void SetOptions(DONATE_TYPE _type, int extraDelay) //딜레이만 있는 값을 설정해야 할 때.
+    {
+        switch (_type)
+        {
+            case DONATE_TYPE.Donate:
+                delayTime = alertDelayTime + donationDuration;
+                break;
+            case DONATE_TYPE.Media:
+                delayTime = extraDelay;
+                break;
+            case DONATE_TYPE.Sub:
+                delayTime = alertDelayTime + subDuration;
+                break;
+            case DONATE_TYPE.Cheer:
+                delayTime = alertDelayTime + subDuration;
+                break;
+            case DONATE_TYPE.Hosting:
+                delayTime = alertDelayTime + hostingDuration;
+                break;
+        }
+    }
+
     #endregion
 
 
     #region DropPresentFunction
     public bool testDropPresent = true;
+
+    public void DisableSpecPresent()
+    {
+        for (int i = 0; i < m_presentsList.Count; i++)
+        {
+            if (m_presentsList[i].gameObject.activeSelf)
+            {
+                m_presentsList[i].Anim_EndSpecialAnim();
+                m_presentsList[i].TurnOffEffect();
+            }
+        }
+    }
 
     public void RemovePresents(Present present)
     {
@@ -123,7 +207,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             for(int  i= 0; i < dropCount; i++)
             {
                 int randCount = Random.Range(0, selectGroup.m_presentList.Length);
-                CreatePresent(m_presents[selectGroup.m_presentList[randCount]]);
+                CreatePresent(m_presents[selectGroup.m_presentList[randCount]], value);
             }
 
         }
@@ -133,33 +217,39 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         PresentGroup select = null;
         for(int i = 0; i < m_presentGroupList.Count; i++)
         {
-            if(m_presentGroupList[i].m_price == value && m_presentGroupList[i].m_isSame)
+            if(m_presentGroupList[i].m_isSame)
             {
-                return m_presentGroupList[i];
-            }
-            else if (m_presentGroupList[i].m_price <= value)
-            {
-                if (select == null)
+                if(m_presentGroupList[i].m_price == value)
                 {
-                    select = m_presentGroupList[i];
-                    continue;
+                    return m_presentGroupList[i];
                 }
-                if (select.m_price < m_presentGroupList[i].m_price)
+            }
+            else
+            {
+                if (m_presentGroupList[i].m_price <= value)
                 {
-                    select = m_presentGroupList[i];
+                    if (select == null)
+                    {
+                        select = m_presentGroupList[i];
+                        continue;
+                    }
+                    if (select.m_price < m_presentGroupList[i].m_price)
+                    {
+                        select = m_presentGroupList[i];
+                    }
                 }
             }
         }
         return select;
     }
 
-    public void CreatePresent(PresentInfo selectPresent)
+    public void CreatePresent(PresentInfo selectPresent, int value)
     {
         var _present = m_PresentsPool.pop();
         Vector3 m_randPos = RandomPosition();
         _present.name = selectPresent.m_sprite.name;
-        _present.SetPresent(selectPresent.m_SpritePos, selectPresent.m_SpriteRot, selectPresent.m_SpriteSize, selectPresent.m_sprite, selectPresent.m_PresentType);
         _present.transform.position = m_randPos;
+        _present.SetPresent(selectPresent.m_SpritePos, selectPresent.m_SpriteRot, selectPresent.m_SpriteSize, selectPresent.m_sprite, selectPresent.m_PresentType, value);
         _present.gameObject.SetActive(true);
         m_presentsList.Add(_present);
     }
@@ -184,18 +274,55 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     #region PresentDataFunction
     void GetDatas()
     {
+        bool[] changeValue = { false, false };
         foreach (KeyValuePair<string, string> obj in DataManager.Instance.m_PresentGroupData)
         {
             var _obj = new Dictionary<string,string>();
             Util.ParseDictionary(obj.Value , out _obj);
-            var newOjb = new PresentGroup(obj.Key, _obj);
-            m_presentGroupList.Add(newOjb);
+            var newObj = new PresentGroup(obj.Key, _obj); 
+            if(newObj.m_price == 100000)
+            {
+                if (newObj.m_presentList[0] == 19)
+                {
+                    int[] a = new int[1];
+                    a[0] = 21;
+                    newObj.m_presentList = a;
+                    changeValue[0] = true;
+                }
+            }
+            else if(newObj.m_price == 50000)
+            {
+                if (newObj.m_presentList[0] == 17)
+                {
+                    int[] a = new int[1];
+                    a[0] = 20;
+                    newObj.m_presentList = a;
+                    changeValue[1] = true;
+                }
+            }
+                m_presentGroupList.Add(newObj);
+        }
+        for(int i = 0; i < changeValue.Length; i++)
+        {
+            if(changeValue[i])
+            {
+                SavePresentGroupData();
+                break;
+            }
         }
     }
 
     public void SavePresentGroupData(PresentGroup obj)
     {
         DataManager.Instance.SaveValues(DataManager.Instance.m_PresentGroupData, obj.m_key, obj.ReturnValue());
+        DataManager.Instance.SaveDatas(DataManager.Instance.m_PresentGroupData, DataManager.Instance.PresentGroupConfigTXT);
+    }
+    public void SavePresentGroupData()//save all
+    {
+        for(int  i= 0; i< m_presentGroupList.Count; i++)
+        {
+            DataManager.Instance.SaveValues(DataManager.Instance.m_PresentGroupData, m_presentGroupList[i].m_key, m_presentGroupList[i].ReturnValue());
+        }
         DataManager.Instance.SaveDatas(DataManager.Instance.m_PresentGroupData, DataManager.Instance.PresentGroupConfigTXT);
     }
     public void AddPresentGroupData(PresentGroup obj)
@@ -238,6 +365,39 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     // Update is called once per frame
     void Update()
     {
+#if UNITY_EDITOR
+        if (testDropPresent )
+        {
+            if (Input.GetKeyDown(KeyCode.Keypad1))
+            {
+                CreatePresents(1000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad2))
+            {
+                CreatePresents(5000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad3))
+            {
+                CreatePresents(10000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad4))
+            {
+                CreatePresents(50000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad5))
+            {
+                CreatePresents(100000);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad6))
+            {
+                CreatePresents(1001);
+            }
+            else if (Input.GetKeyDown(KeyCode.Keypad7))
+            {
+                CreatePresents(1002);
+            }
+        }
+#else
         if (testDropPresent && Input.GetKey(KeyCode.LeftControl))
         {
             if (Input.GetKeyDown(KeyCode.Z))
@@ -260,8 +420,16 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             {
                 CreatePresents(100000);
             }
-
+            else if (Input.GetKeyDown(KeyCode.N))
+            {
+                CreatePresents(1001);
+            }
+            else if (Input.GetKeyDown(KeyCode.M))
+            {
+                CreatePresents(1002);
+            }
         }
+#endif
 
         if (Input.GetKeyDown(KeyCode.P))
         {
@@ -274,6 +442,6 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             }
         }
         DonateQueueActive();
-        currentDonateQueue = m_donateQueue.Count;
+        testCurrentQueueCount = m_donateQueue.Count;
     }
 }
