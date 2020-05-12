@@ -12,6 +12,8 @@ public class Present : MonoBehaviour
     Vector3 specPosition;
     GameObject SimpleDonateEffect;
     GameObject DonateRayEffect;
+    Vector3 CollisionOverlapMovePosition;
+    bool CollisionOverlaped;
     int speed;
     private void OnTriggerEnter(Collider collision)
     {
@@ -26,6 +28,11 @@ public class Present : MonoBehaviour
             DonateRayEffect.SetActive(false);
             PresentsManager.Instance.RemovePresents(this);
         }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        Debug.Log(name + "CollisionStay!");
     }
 
     public void TurnOffEffect()
@@ -101,7 +108,6 @@ public class Present : MonoBehaviour
         specAnim.Rewind();
         specAnim.Stop();
         m_image.gameObject.transform.rotation = Quaternion.Euler(Vector3.zero);
-        Debug.Log("enter here" + name);
     }
 
     private void Awake()
