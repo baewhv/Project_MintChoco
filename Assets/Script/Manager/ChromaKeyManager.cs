@@ -7,7 +7,7 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
     GameObject BackGroundObject;
     GameObject ForeGroundObject;
     GameObject TableObject;
-    GameObject PresentsManager;
+    GameObject PresentsManagerObj;
     GameObject Blinker;
     Character m_Character;
     int isHide;
@@ -23,7 +23,8 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
         {
             BackGroundObject.SetActive(false);
             ForeGroundObject.SetActive(false);
-            PresentsManager.SetActive(false);
+            PresentsManager.Instance.SetChromakeyMode(true);
+            PresentsManagerObj.SetActive(false);
             Blinker.SetActive(false);
             m_Character.SetChromaKeyMode();
             isHide++;
@@ -33,7 +34,8 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
             BackGroundObject.SetActive(false);
             ForeGroundObject.SetActive(true);
             ObjectManager.Instance.SetCamMode();
-            PresentsManager.SetActive(true);
+            PresentsManagerObj.SetActive(true);
+            PresentsManager.Instance.SetChromakeyMode(false);
             Blinker.SetActive(false);
             m_Character.SetCamBroadMode();
             isHide++;
@@ -43,7 +45,7 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
             BackGroundObject.SetActive(true);
             ForeGroundObject.SetActive(true);
             ObjectManager.Instance.DisableCamMode();
-            PresentsManager.SetActive(true);
+            PresentsManagerObj.SetActive(true);
             Blinker.SetActive(true);
             m_Character.DisableChromaKeyMode();
             isHide = 0;
@@ -56,7 +58,7 @@ public class ChromaKeyManager : SingletonMonoBehaviour<ChromaKeyManager>
         m_Character = GameObject.Find("Character").GetComponent<Character>();
         BackGroundObject = GameObject.Find("BackgroundCanvas");
         ForeGroundObject = GameObject.Find("ForwardCanvas");
-        PresentsManager = GameObject.Find("PresentsManager");
+        PresentsManagerObj = GameObject.Find("PresentsManager");
         Blinker = GameObject.Find("Blinker");
     }
 }

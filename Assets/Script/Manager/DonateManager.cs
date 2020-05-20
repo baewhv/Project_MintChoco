@@ -78,7 +78,7 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
                         {
                             Debug.Log(i + " and " + j);
                             m_massege.SetText(texts[i * 2], j);
-                            PresentsManager.Instance.CreatePresents(j);
+                            PresentsManager.Instance.CreatePresentBundle(j);
                         }
                     }
                 }
@@ -95,7 +95,7 @@ public class DonateManager : SingletonMonoBehaviour<DonateManager>
                         {
                             Debug.Log(i + " and " + j);
                             m_massege.SetText(texts[i * 2], j);
-                            PresentsManager.Instance.CreatePresents(j);
+                            PresentsManager.Instance.CreatePresentBundle(j);
                         }
                     }
                 }

@@ -36,7 +36,7 @@ namespace SocketIO
         IEnumerator SendPing;
 
         IEnumerator TryReconnect;
-
+        
         protected override void OnAwake()
         {
             base.OnAwake();
@@ -68,6 +68,7 @@ namespace SocketIO
                 }
             }
         }
+
         //int testnumA = 0;
         //int testnumB = 0;
 
@@ -91,15 +92,18 @@ namespace SocketIO
 
             CheckConnection();
 
-            //if (Input.GetKeyDown(KeyCode.Keypad1))
+            //if (Input.GetKeyDown(KeyCode.Keypad8))
             //{
-            //    PresentsManager.Instance.AddDonateQueue(testnumA.ToString(), 1000,PresentsManager.DONATE_TYPE.Donate);
+            //    PresentsManager.Instance.AddDonateQueue(testnumA.ToString(), 4000, PresentsManager.DONATE_TYPE.Donate);
             //    testnumA++;
             //}
-            //if (Input.GetKeyDown(KeyCode.Keypad2))
+            //if (Input.GetKeyDown(KeyCode.Keypad9))
             //{
-            //    PresentsManager.Instance.DonateSetNow(testnumB.ToString());
-            //    testnumB++;
+            //    if (testnumA > testnumB)
+            //    {
+            //        PresentsManager.Instance.DonateSetNow(testnumB.ToString());
+            //        testnumB++;
+            //    }
             //}
         }
 
@@ -346,15 +350,15 @@ namespace SocketIO
                         switch (dataType)
                         {
                             case "sub":
-                                Debug.Log("get [Sub] at [Now]");
+                                //Debug.Log("get [Sub] at [Now]");
                                 PresentsManager.Instance.DonateSetNow("sub" , false);
                                 break;
                             case "hosting":
-                                Debug.Log("get [Hosting] at [Now]");
+                                //Debug.Log("get [Hosting] at [Now]");
                                 PresentsManager.Instance.DonateSetNow("hosting", false);
                                 break;
                             case "cheer":
-                                Debug.Log("get [Cheer] at [Now]");
+                                //Debug.Log("get [Cheer] at [Now]");
                                 PresentsManager.Instance.DonateSetNow("cheer", false);
                                 break;
                         }

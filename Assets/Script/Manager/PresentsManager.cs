@@ -14,12 +14,12 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
 
     public List<PresentInfo> m_presentsDataList = new List<PresentInfo>();
     public List<PresentGroup> m_presentGroupList = new List<PresentGroup>();
+    public Queue<int> m_DonateToPresentQ = new Queue<int>();
 
     //objectPool
     List<Present> m_presentsList = new List<Present>();
     GameObjectPool<Present> m_PresentsPool;
     GameObject m_presentPrefab;
-
 
     GameObject m_character;
     [SerializeField] Transform dropPosition = null;
@@ -52,7 +52,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     float cheerduration = 0.0f;
     bool doDonateToPresent;
 
-    int testCurrentQueueCount = 0;
+    //int testCurrentQueueCount = 0;
 
     public void SetDelayTimes(float _alertDelayTime, float _donationDuration, float _subDuration, float _hostingDuration, float _cheerduration)
     {
@@ -114,7 +114,8 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         if (m_donateQueue.ContainsKey(_key))
         {
             //Debug.Log("!make Present" + _key);
-            CreatePresents(m_donateQueue[_key].value);
+            m_DonateToPresentQ.Enqueue(m_donateQueue[_key].value);
+            
             startTime = 0.0f;
             SetOptions(m_donateQueue[_key].type, m_donateQueue[_key].value);
             doDonateToPresent = true;
@@ -187,7 +188,7 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         }
     }
 
-    public void CreatePresents(int value)
+    public void CreatePresentBundle(int value)
     {
         if (value >= 1000)
         {
@@ -246,18 +247,59 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     public void CreatePresent(PresentInfo selectPresent, int value)
     {
         var _present = m_PresentsPool.pop();
-        Vector3 m_randPos = RandomPosition();
+        Vector3 m_randPos = RandomPosition(selectPresent.ReturnColliderSize(), selectPresent.m_SpriteSize);
         _present.name = selectPresent.m_sprite.name;
         _present.transform.position = m_randPos;
-        _present.SetPresent(selectPresent.m_SpritePos, selectPresent.m_SpriteRot, selectPresent.m_SpriteSize, selectPresent.m_sprite, selectPresent.m_PresentType, value);
+        _present.SetPresent(selectPresent, value);
         _present.gameObject.SetActive(true);
         m_presentsList.Add(_present);
     }
 
-    Vector3 RandomPosition()
+    Vector3 RandomPosition(Vector3 size, Vector3 sprSize)
     {
+        int[] array = { -1,0, 1 };
         float posX = Util.Rand(dropPosition.localPosition.x - dropPosition.localScale.x / 2, dropPosition.localPosition.x + dropPosition.localScale.x / 2);
         float posY = Util.Rand(dropPosition.localPosition.y - dropPosition.localScale.y / 2, dropPosition.localPosition.y + dropPosition.localScale.y / 2);
+        RaycastHit rayHit;
+        bool checkOverlap = false;
+        while(!checkOverlap)
+        {
+            int count = 4;
+            for (int i = 0; i < array.Length; i++)
+            {
+                bool checkOver = false;
+                if (!checkOver)
+                {
+                    for (int j = 0; j < array.Length; j++)
+                    {
+                        float rayX = posX + (size.x / 2 * array[i]);
+                        float rayY = posY + (size.y / 2 * array[j]);
+
+                        Debug.DrawRay(new Vector3(rayX, rayY, dropPosition.localPosition.z + 10), -transform.forward * 10.0f, Color.red, 1.0f);
+                        if (Physics.Raycast(new Vector3(rayX, rayY, dropPosition.localPosition.z + 10), -transform.forward, out rayHit, 10.0f))
+                        {
+                            //Debug.Log(rayHit.transform.name);
+                            checkOver = true;
+                            break;
+                        }
+                        count--;
+                    }
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if(count>0)
+            {
+                posY += 5;
+                //Debug.Log("");
+                continue;
+            }
+            checkOverlap = true;
+        }
+        
         //float posZ = Util.Rand(dropPosition.localPosition.z - dropPosition.localScale.z / 2, dropPosition.localPosition.z + dropPosition.localScale.z / 2);
         return new Vector3(posX, posY, dropPosition.localPosition.z);
     }
@@ -277,30 +319,10 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         bool[] changeValue = { false, false };
         foreach (KeyValuePair<string, string> obj in DataManager.Instance.m_PresentGroupData)
         {
-            var _obj = new Dictionary<string,string>();
-            Util.ParseDictionary(obj.Value , out _obj);
-            var newObj = new PresentGroup(obj.Key, _obj); 
-            if(newObj.m_price == 100000)
-            {
-                if (newObj.m_presentList[0] == 19)
-                {
-                    int[] a = new int[1];
-                    a[0] = 21;
-                    newObj.m_presentList = a;
-                    changeValue[0] = true;
-                }
-            }
-            else if(newObj.m_price == 50000)
-            {
-                if (newObj.m_presentList[0] == 17)
-                {
-                    int[] a = new int[1];
-                    a[0] = 20;
-                    newObj.m_presentList = a;
-                    changeValue[1] = true;
-                }
-            }
-                m_presentGroupList.Add(newObj);
+            var _obj = new Dictionary<string, string>();
+            Util.ParseDictionary(obj.Value, out _obj);
+            var newObj = new PresentGroup(obj.Key, _obj);
+            m_presentGroupList.Add(newObj);
         }
         for(int i = 0; i < changeValue.Length; i++)
         {
@@ -337,6 +359,11 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     }
 
     #endregion
+    bool isChromakeyMode = false;
+    public void SetChromakeyMode(bool b)
+    {
+        isChromakeyMode = b;
+    }
 
     override protected void OnAwake()
     {
@@ -370,31 +397,31 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         {
             if (Input.GetKeyDown(KeyCode.Keypad1))
             {
-                CreatePresents(1000);
+                CreatePresentBundle(1000);
             }
             else if (Input.GetKeyDown(KeyCode.Keypad2))
             {
-                CreatePresents(5000);
+                CreatePresentBundle(5000);
             }
             else if (Input.GetKeyDown(KeyCode.Keypad3))
             {
-                CreatePresents(10000);
+                CreatePresentBundle(10000);
             }
             else if (Input.GetKeyDown(KeyCode.Keypad4))
             {
-                CreatePresents(50000);
+                CreatePresentBundle(50000);
             }
             else if (Input.GetKeyDown(KeyCode.Keypad5))
             {
-                CreatePresents(100000);
+                CreatePresentBundle(100000);
             }
             else if (Input.GetKeyDown(KeyCode.Keypad6))
             {
-                CreatePresents(1001);
+                CreatePresentBundle(1001);
             }
             else if (Input.GetKeyDown(KeyCode.Keypad7))
             {
-                CreatePresents(1002);
+                CreatePresentBundle(1002);
             }
         }
 #else
@@ -402,31 +429,31 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
         {
             if (Input.GetKeyDown(KeyCode.Z))
             {
-                CreatePresents(1000);
+                CreatePresentBundle(1000);
             }
             else if (Input.GetKeyDown(KeyCode.X))
             {
-                CreatePresents(5000);
+                CreatePresentBundle(5000);
             }
             else if (Input.GetKeyDown(KeyCode.C))
             {
-                CreatePresents(10000);
+                CreatePresentBundle(10000);
             }
             else if (Input.GetKeyDown(KeyCode.V))
             {
-                CreatePresents(50000);
+                CreatePresentBundle(50000);
             }
             else if (Input.GetKeyDown(KeyCode.B))
             {
-                CreatePresents(100000);
+                CreatePresentBundle(100000);
             }
             else if (Input.GetKeyDown(KeyCode.N))
             {
-                CreatePresents(1001);
+                CreatePresentBundle(1001);
             }
             else if (Input.GetKeyDown(KeyCode.M))
             {
-                CreatePresents(1002);
+                CreatePresentBundle(1002);
             }
         }
 #endif
@@ -442,6 +469,10 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             }
         }
         DonateQueueActive();
-        testCurrentQueueCount = m_donateQueue.Count;
+        if(!isChromakeyMode && m_DonateToPresentQ.Count > 0)
+        {
+            CreatePresentBundle(m_DonateToPresentQ.Dequeue());
+        }
+        //testCurrentQueueCount = m_donateQueue.Count;
     }
 }

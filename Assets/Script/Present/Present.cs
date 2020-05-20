@@ -12,8 +12,6 @@ public class Present : MonoBehaviour
     Vector3 specPosition;
     GameObject SimpleDonateEffect;
     GameObject DonateRayEffect;
-    Vector3 CollisionOverlapMovePosition;
-    bool CollisionOverlaped;
     int speed;
     private void OnTriggerEnter(Collider collision)
     {
@@ -30,16 +28,30 @@ public class Present : MonoBehaviour
         }
     }
 
-    private void OnCollisionStay(Collision collision)
-    {
-        Debug.Log(name + "CollisionStay!");
-    }
+    //private void OnCollisionEnter(Collision collision)
+    //{
+    //    if(collision.collider.tag == "Present")
+    //    {
+    //        CollisionOverlaped++;
+    //        Debug.Log(name + " to " + collision.collider.name  + " / " + CollisionOverlaped);
+    //    }
+        
+    //}
+    //private void OnCollisionExit(Collision collision)
+    //{
+    //    if (collision.collider.tag == "Present")
+    //    {
+    //        CollisionOverlaped--;
+    //        Debug.Log(name + " to " + collision.collider.name + " / " + CollisionOverlaped);
+    //    }
+    //}
 
     public void TurnOffEffect()
     {
         SimpleDonateEffect.SetActive(false);
         DonateRayEffect.SetActive(false);
     }
+
     public void SetExplosion(Vector3 CharacterV)
     {
         if (!specAnim.isPlaying)
@@ -47,47 +59,14 @@ public class Present : MonoBehaviour
             m_rigidbody.velocity = (transform.position - CharacterV) * 10;
         }
     }
-    public void SetPresent(Vector3 pos, Vector3 rot, Vector3 size, Sprite image, PresentInfo.PRESENT_TYPE type, int value)
+    public void SetPresent(PresentInfo info, int value)
     {
-        m_image.transform.localPosition = pos;
-        m_image.transform.localRotation = Quaternion.Euler(rot);
-        m_image.transform.localScale = size;
-        m_image.sprite = image;
-        switch(type)
-        {
-            case PresentInfo.PRESENT_TYPE.CandyBall:
-                m_collider.size = new Vector3(0.25f, 0.25f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Candy:
-                m_collider.size = new Vector3(1f, 0.4f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.ThinCandy:
-                m_collider.size = new Vector3(1.1f, 0.3f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Small:
-                m_collider.size = new Vector3(1f, 1f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Small_Macaroon:
-                m_collider.size = new Vector3(1f, 0.7f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Long:
-                m_collider.size = new Vector3(1f, 1.7f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Wide:
-                m_collider.size = new Vector3(2f, 1.4f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Big:
-                m_collider.size = new Vector3(2f, 2.5f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Huge:
-                m_rigidbody.mass = 10;
-                m_collider.size = new Vector3(1.3f, 1.3f, 0.2f);
-                break;
-            case PresentInfo.PRESENT_TYPE.Long_Coke:
-                m_collider.size = new Vector3(0.8f, 2.6f, 0.2f);
-                break;
-        }
-        if(value >= 50000)
+        m_image.transform.localPosition = info.m_SpritePos;
+        m_image.transform.localRotation = Quaternion.Euler(info.m_SpriteRot);
+        m_image.transform.localScale = info.m_SpriteSize;
+        m_image.sprite = info.m_sprite;
+        m_collider.size = info.ReturnColliderSize();
+        if (value >= 50000)
         {
             SimpleDonateEffect.SetActive(true);
             //effect a
@@ -104,10 +83,15 @@ public class Present : MonoBehaviour
 
     public void Anim_EndSpecialAnim()
     {
-        m_collider.enabled = true;
-        specAnim.Rewind();
-        specAnim.Stop();
-        m_image.gameObject.transform.rotation = Quaternion.Euler(Vector3.zero);
+        if (SimpleDonateEffect.activeSelf)
+        {
+            m_collider.enabled = true;
+            specAnim.Rewind();
+            specAnim.Stop();
+            SimpleDonateEffect.SetActive(false);
+            DonateRayEffect.SetActive(false);
+            m_image.gameObject.transform.localRotation = Quaternion.Euler(Vector3.zero);
+        }
     }
 
     private void Awake()

@@ -92,7 +92,11 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
     // Update is called once per frame
     void Update()
     {
+    #if UNITY_EDITOR
         if (Input.GetKeyDown(OptionKey) && ChromaKeyManager.Instance.GetisHide() == 0)
+    #else
+        if (Input.GetKeyDown(OptionKey) && Input.GetKey(KeyCode.LeftControl) && ChromaKeyManager.Instance.GetisHide() == 0)
+    #endif
         {
             if (optionUI.activeSelf)
             {
