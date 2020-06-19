@@ -247,12 +247,32 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
     public void CreatePresent(PresentInfo selectPresent, int value)
     {
         var _present = m_PresentsPool.pop();
-        Vector3 m_randPos = RandomPosition(selectPresent.ReturnColliderSize(), selectPresent.m_SpriteSize);
-        _present.name = selectPresent.m_sprite.name;
+
+        Vector3 p_size = Vector3.zero;
+        float p_mass = 0;
+        selectPresent.ReturnColliderSize(out p_size, out p_mass);
+
+        Vector3 m_randPos = RandomPosition(p_size, selectPresent.m_SpriteSize);
+        if (selectPresent.m_sprite != null)
+        {
+            _present.name = selectPresent.m_sprite.name;
+        }
         _present.transform.position = m_randPos;
         _present.SetPresent(selectPresent, value);
         _present.gameObject.SetActive(true);
         m_presentsList.Add(_present);
+    }
+    public void ResetDropPosition()
+    {
+        dropPosition.localPosition = new Vector3(-3.7f, dropPosition.localPosition.y, dropPosition.localPosition.z);
+        dropPosition.localScale = new Vector3(9.8f, Instance.dropPosition.localScale.y, dropPosition.localScale.z);
+        Debug.Log("set");
+    }
+    public void SetWideDropPosition()
+    {
+        dropPosition.localPosition = new Vector3(0f, dropPosition.localPosition.y, dropPosition.localPosition.z);
+        dropPosition.localScale = new Vector3(16.0f, Instance.dropPosition.localScale.y, dropPosition.localScale.z);
+        Debug.Log("unset");
     }
 
     Vector3 RandomPosition(Vector3 size, Vector3 sprSize)
@@ -423,6 +443,10 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             {
                 CreatePresentBundle(1002);
             }
+            else if (Input.GetKeyDown(KeyCode.Keypad8))
+            {
+                CreatePresentBundle(1000000);
+            }
         }
 #else
         if (testDropPresent && Input.GetKey(KeyCode.LeftControl))
@@ -449,9 +473,13 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             }
             else if (Input.GetKeyDown(KeyCode.N))
             {
-                CreatePresentBundle(1001);
+                CreatePresentBundle(1000000);
             }
             else if (Input.GetKeyDown(KeyCode.M))
+            {
+                CreatePresentBundle(1001);
+            }
+            else if (Input.GetKeyDown(KeyCode.Comma))
             {
                 CreatePresentBundle(1002);
             }

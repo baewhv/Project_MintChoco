@@ -219,7 +219,7 @@ namespace SocketIO
                             }
                             catch (Exception ex)
                             {
-                                //Debug.Log("파싱 실패 : 기타 사유 - " + ex.Message);
+                                Debug.Log("파싱 실패 : 기타 사유 - " + ex.Message);
                                 //Debug.Log("파싱명" + ev.name);
                             }
                         }

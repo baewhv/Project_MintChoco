@@ -20,6 +20,8 @@ public class Character : MonoBehaviour
     IEnumerator SDown;
     IEnumerator SUp;
 
+    IEnumerator EyeBlinker;
+
     MicManager Mic;
 
     float LeftEndZone = -9.0f;
@@ -52,6 +54,7 @@ public class Character : MonoBehaviour
         canMove = true;
         canJump = true;
         canBlink = true;
+        EyeBlinker = EyeBlink();
         canEmoticon = true;
         equipWeapon = false;
         isBurrow = false;
@@ -69,7 +72,7 @@ public class Character : MonoBehaviour
     void Start()
     {
         initProperty();
-        StartCoroutine(EyeBlink());
+        StartCoroutine(EyeBlinker);
     }
 
 
@@ -80,7 +83,6 @@ public class Character : MonoBehaviour
     }
     public void HideFace()
     {
-        StopCoroutine("EyeBlink");
         canBlink = false;
         m_Eye.gameObject.SetActive(false);
     }
@@ -201,12 +203,14 @@ public class Character : MonoBehaviour
         m_dir = Vector3.zero;
         m_rigidbody.velocity = Vector3.zero;
         transform.position = Vector3.zero;
+        StopCoroutine(EyeBlinker);
         gameObject.SetActive(false);
     }
 
     public void DisableChromaKeyMode()
     {
         gameObject.SetActive(true);
+        StartCoroutine(EyeBlinker);
         canBurrow = true;
         ReplayMovement();
         m_rigidbody.useGravity = true;

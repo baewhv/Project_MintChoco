@@ -36,33 +36,55 @@ public class PresentInfo
     public Vector3 m_SpriteSize;
     public PRESENT_DATA m_PresentData;
 
-    public Vector3 ReturnColliderSize()
+    public void ReturnColliderSize(out Vector3 Size, out float Mass)
     {
 
         switch (m_PresentType)
         {
             case PRESENT_TYPE.CandyBall:
-                return new Vector3(0.25f, 0.25f, 0.2f);
+                Size = new Vector3(0.25f, 0.25f, 0.2f);
+                Mass = 0.1f;
+                break;
             case PRESENT_TYPE.Candy:
-                return new Vector3(1f, 0.4f, 0.2f);
+                Size = new Vector3(1f, 0.4f, 0.2f);
+                Mass = 0.1f;
+                break;
             case PRESENT_TYPE.ThinCandy:
-                return new Vector3(1.1f, 0.3f, 0.2f);
+                Size = new Vector3(1.1f, 0.3f, 0.2f);
+                Mass = 0.1f;
+                break;
             case PRESENT_TYPE.Small:
-                return new Vector3(1f, 1f, 0.2f);
+                Size = new Vector3(1f, 1f, 0.2f);
+                Mass = 1.0f;
+                break;
             case PRESENT_TYPE.Small_Macaroon:
-                return new Vector3(1f, 0.7f, 0.2f);
+                Size = new Vector3(1f, 0.7f, 0.2f);
+                Mass = 1.0f;
+                break;
             case PRESENT_TYPE.Long:
-                return new Vector3(1f, 1.7f, 0.2f);
+                Size = new Vector3(1f, 1.7f, 0.2f);
+                Mass = 1.5f;
+                break;
             case PRESENT_TYPE.Wide:
-                return new Vector3(2f, 1.4f, 0.2f);
+                Size = new Vector3(2f, 1.4f, 0.2f);
+                Mass = 2.0f;
+                break;
             case PRESENT_TYPE.Big:
-                return new Vector3(2f, 2.5f, 0.2f);
+                Size = new Vector3(2f, 2.5f, 0.2f);
+                Mass = 3f;
+                break;
             case PRESENT_TYPE.Huge:
-                return new Vector3(1.3f, 1.3f, 0.2f);
+                Size = new Vector3(1.3f, 1.3f, 0.2f);
+                Mass = 5f;
+                break;
             case PRESENT_TYPE.Long_Coke:
-                return new Vector3(0.8f, 2.6f, 0.2f);
+                Size = new Vector3(0.8f, 2.6f, 0.2f);
+                Mass = 1.5f;
+                break;
             default:
-                return Vector3.zero;
+                Size = Vector3.zero;
+                Mass = 0.01f;
+                break;
         }
     }
 }

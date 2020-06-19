@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4995365414033825975}
   - component: {fileID: -1132606580443064244}
   m_Layer: 0
-  m_Name: SimpleDonateRayEffect
+  m_Name: SimpleDonateEffect
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -85,7 +85,7 @@ ParticleSystem:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8223059422083722324}
   serializedVersion: 6
-  lengthInSec: 10
+  lengthInSec: 8
   simulationSpeed: 1
   stopAction: 0
   cullingMode: 0
@@ -910,7 +910,7 @@ ParticleSystem:
     rateOverTime:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 20
+      scalar: 10
       minScalar: 10
       maxCurve:
         serializedVersion: 2

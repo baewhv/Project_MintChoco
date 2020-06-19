@@ -156,10 +156,10 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
             m_Mornitor = obj;
 
         }
-        if(key == "Furniture_Desk")
-        {
-            obj.GetComponent<FurnitureObject>().viewCamMode = true;
-        }
+        //if(key == "Furniture_Desk")
+        //{
+        //    obj.GetComponent<FurnitureObject>().viewCamMode = true;
+        //}
 
         if (bool.Parse(str[(int)FURN_DATA.order]))
         {

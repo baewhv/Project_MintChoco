@@ -12,6 +12,7 @@ public class Present : MonoBehaviour
     Vector3 specPosition;
     GameObject SimpleDonateEffect;
     GameObject DonateRayEffect;
+    GameObject GoldBar;
     int speed;
     private void OnTriggerEnter(Collider collision)
     {
@@ -21,30 +22,18 @@ public class Present : MonoBehaviour
             m_rigidbody.velocity = Vector3.zero;
             m_rigidbody.angularVelocity = Vector3.zero;
             m_rigidbody.centerOfMass = Vector3.zero;
+            m_rigidbody.useGravity = true;
             specPosition = Vector3.zero;
             SimpleDonateEffect.SetActive(false);
             DonateRayEffect.SetActive(false);
+            if(GoldBar != null)
+            {
+                DisableGoldBar();
+            }
             PresentsManager.Instance.RemovePresents(this);
         }
     }
 
-    //private void OnCollisionEnter(Collision collision)
-    //{
-    //    if(collision.collider.tag == "Present")
-    //    {
-    //        CollisionOverlaped++;
-    //        Debug.Log(name + " to " + collision.collider.name  + " / " + CollisionOverlaped);
-    //    }
-        
-    //}
-    //private void OnCollisionExit(Collision collision)
-    //{
-    //    if (collision.collider.tag == "Present")
-    //    {
-    //        CollisionOverlaped--;
-    //        Debug.Log(name + " to " + collision.collider.name + " / " + CollisionOverlaped);
-    //    }
-    //}
 
     public void TurnOffEffect()
     {
@@ -56,6 +45,8 @@ public class Present : MonoBehaviour
     {
         if (!specAnim.isPlaying)
         {
+            m_rigidbody.useGravity = false;
+            //m_rigidbody.drag = 0;
             m_rigidbody.velocity = (transform.position - CharacterV) * 10;
         }
     }
@@ -65,20 +56,54 @@ public class Present : MonoBehaviour
         m_image.transform.localRotation = Quaternion.Euler(info.m_SpriteRot);
         m_image.transform.localScale = info.m_SpriteSize;
         m_image.sprite = info.m_sprite;
-        m_collider.size = info.ReturnColliderSize();
+
+        Vector3 p_size = Vector3.zero;
+        float p_mass = 0;
+        info.ReturnColliderSize(out p_size, out p_mass);
+        m_collider.size = p_size;
+        m_rigidbody.mass = p_mass;
+
         if (value >= 50000)
         {
-            SimpleDonateEffect.SetActive(true);
-            //effect a
+            if (ChromaKeyManager.Instance.GetisHide() == 0)
+            {
+                SimpleDonateEffect.SetActive(true);
+            }
             if (value >= 100000)
             {
-                DonateRayEffect.SetActive(true);
-                //effect b
+                if (ChromaKeyManager.Instance.GetisHide() == 0)
+                {
+                    DonateRayEffect.SetActive(true);
+                }
                 specAnim.Play();
+                m_rigidbody.useGravity = false;
                 m_collider.enabled = false;
                 specPosition = new Vector3(transform.position.x, transform.position.y - 7, transform.position.z);
+                if (value >= 1000000)
+                {
+                    SetGoldBar();
+                    EffectManager.Instance.SetGoldBar(transform.position.x);
+                }
             }
         }
+    }
+
+    void SetGoldBar()
+    {
+        GoldBar = Resources.Load("Prefab/Present/Gold") as GameObject;
+        var gold = Instantiate(GoldBar) as GameObject;
+        m_image.sprite = null;
+        gold.transform.SetParent(m_image.transform);
+        gold.transform.localPosition = Vector3.zero;
+        GoldBar = gold;
+        GoldBar.SetActive(true);
+    }
+
+    void DisableGoldBar()
+    {
+        Destroy(GoldBar.gameObject);
+        GoldBar = null;
+        
     }
 
     public void Anim_EndSpecialAnim()
@@ -86,6 +111,7 @@ public class Present : MonoBehaviour
         if (SimpleDonateEffect.activeSelf)
         {
             m_collider.enabled = true;
+            m_rigidbody.useGravity = true;
             specAnim.Rewind();
             specAnim.Stop();
             SimpleDonateEffect.SetActive(false);
@@ -98,37 +124,47 @@ public class Present : MonoBehaviour
     {
         m_collider = GetComponent<BoxCollider>();
         specAnim = GetComponent<Animation>();
+
         SimpleDonateEffect = Resources.Load("Prefab/Effect/SimpleDonateEffect") as GameObject;
         var effA = Instantiate(SimpleDonateEffect) as GameObject;
         effA.transform.SetParent(transform);
         effA.transform.localPosition = Vector3.zero;
         SimpleDonateEffect = effA;
         SimpleDonateEffect.SetActive(false);
+
         DonateRayEffect = Resources.Load("Prefab/Effect/DonateRayEffect") as GameObject;
         var effB = Instantiate(DonateRayEffect) as GameObject;
         effB.transform.SetParent(transform);
         effB.transform.localPosition = Vector3.zero;
         DonateRayEffect = effB;
         DonateRayEffect.SetActive(false);
+
         speed = 0;
     }
     void Start()
     {
-        
+        //m_rigidbody.AddForce(1, 500, 1);
     }
 
     // Update is called once per frame
     void Update()
     {
-        transform.position += speed * Vector3.down * Time.deltaTime;
+        //transform.position += speed * Vector3.down * Time.deltaTime;
         if (specAnim.isPlaying)
         {
             transform.position = Vector3.Lerp(transform.position, specPosition, Time.deltaTime);
         }
         else
         {
-            m_rigidbody.velocity += Vector3.down * 2.5f * Time.deltaTime;
+            //m_rigidbody.velocity += Vector3.down * 2.5f * Time.deltaTime;
+            
         }
-
+    }
+    private void FixedUpdate()
+    {
+        if (!specAnim.isPlaying)
+        {
+            m_rigidbody.AddForce(Vector3.up * 33f * m_rigidbody.mass);
+        }
     }
 }
