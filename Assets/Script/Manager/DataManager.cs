@@ -23,7 +23,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         CheckData(m_OptionData, "TwippyLogAddress", @"C:\Users\YourName\AppData\Roaming\Twippy\userdata");
         CheckData(m_OptionData, "TwipWssAddress", "AAAAAAAAAA");
         CheckData(m_OptionData, "ToonationAddress", "wss://toonation.kr/");
-        CheckData(m_OptionData, "SelectSpotLight", "False");
+        CheckData(m_OptionData, "SelectSpotLight", "0");
         CheckData(m_OptionData, "UseTwippyTXTDonate", "False");
         CheckData(m_OptionData, "UseTwipSocketDonate", "True");
         SaveDatas(m_OptionData, optionConfigTXT);
@@ -48,7 +48,8 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
         CheckData(m_PresentGroupData, "presentGroup_4", "name:기본 도네5&price:100000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:21");
         CheckData(m_PresentGroupData, "presentGroup_5", "name:기본 도네4&price:1001&isSame:True&extractCount:1&addPrice:0&groupData:0&presentList:17,18");
         CheckData(m_PresentGroupData, "presentGroup_6", "name:기본 도네5&price:1002&isSame:True&extractCount:1&addPrice:0&groupData:0&presentList:19");
-        CheckData(m_PresentGroupData, "presentGroup_7", "name:기본 도네5&price:1000000&isSame:True&extractCount:1&addPrice:0&groupData:0&presentList:22");
+        CheckData(m_PresentGroupData, "presentGroup_7", "name:기본 도네6&price:1000000&isSame:False&extractCount:1&addPrice:0&groupData:0&presentList:22");
+        CheckData(m_PresentGroupData, "presentGroup_8", "name:기본 도네7&price:48200&isSame:True&extractCount:1&addPrice:0&groupData:0&presentList:23");
 
         SaveDatas(m_PresentGroupData, PresentGroupConfigTXT);
         //SaveDatas(m_PresentInfoData, PresentInfoConfigTXT);

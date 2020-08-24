@@ -39,7 +39,7 @@ public class OptionUI : MonoBehaviour
         CreateOption_Check("Option_UseTwipSocketDonate", "UseTwipSocketDonate", "도네 아이템 받기(트윕 경로)");
         CreateOption_Password("Option_TwipWssAddress", "TwipWssAddress", "트윕 경로", "경로 유출에 주의하세요!");
         CreateOption_Password("Option_ToonationAddress", "ToonationAddress", "투네이션 경로", "경로 유출에 주의하세요!");
-        CreateOption_Check("Option_SelectSpotLight", "SelectSpotLight", "호우! 제대로 놀아보자!");
+        //CreateOption_Check("Option_SelectSpotLight", "SelectSpotLight", "호우! 제대로 놀아보자!");
 
     }
 
@@ -149,7 +149,7 @@ public class OptionUI : MonoBehaviour
         }
         DataManager.Instance.SaveDatas(DataManager.Instance.m_OptionData, DataManager.Instance.optionConfigTXT);
         SocketIO.SocketIOManager.Instance.ResetWebSocket();
-        DonateManager.Instance.ResetDonateManager();
+        //DonateManager.Instance.ResetDonateManager();
     }
     public void DestroyOptions()
     {

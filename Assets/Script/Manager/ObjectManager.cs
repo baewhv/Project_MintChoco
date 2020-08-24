@@ -29,6 +29,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
     Canvas backCanvas;
     GameObject m_ObjectPrefab;
     GameObject m_OptionPanelPrefab;
+    GameObject m_LightRMCPrefab;
     GameObject m_MornitorOption;
     GameObject m_Mornitor = null;
 
@@ -227,9 +228,28 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         rt.localPosition = new Vector3(m_Mornitor.transform.localPosition.x, m_Mornitor.transform.localPosition.y + 16);
         rt.sizeDelta = new Vector2(752f, 419f);
         InputManager.Instance.SetOptionUI(obj);
-        DonateManager.Instance.getTVMessage(obj.GetComponent<OptionUI>().SendTVPanel());
+        //DonateManager.Instance.getTVMessage(obj.GetComponent<OptionUI>().SendTVPanel());
         m_MornitorOption = obj;
     }
+
+    void SetLightMRCOption()
+    {
+        var obj = Instantiate(m_LightRMCPrefab) as GameObject;
+        obj.transform.SetParent(foreCanvas.transform);
+        obj.transform.localScale = Vector3.one;
+        RectTransform rt = (RectTransform)obj.transform;
+        rt.localPosition = new Vector2(860f, -620f);
+        rt.sizeDelta = new Vector2(200f, 240f);
+        LightManager.Instance.SetLightMRCUI(obj);
+        m_LightRMCPrefab = obj;
+        m_LightRMCPrefab.SetActive(false);
+
+    }
+    public void LightMRCActive(bool b)
+    {
+        m_LightRMCPrefab.SetActive(b);
+    }
+
 
     public void SetObjectPosition()
     {
@@ -333,6 +353,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         backCanvas = GameObject.Find("BackgroundCanvas").GetComponent<Canvas>();
         m_ObjectPrefab = Resources.Load("Prefab/FurniturePrefab") as GameObject;
         m_OptionPanelPrefab = Resources.Load("Prefab/UI/OptionPanel") as GameObject;
+        m_LightRMCPrefab = Resources.Load("Prefab/UI/LightRMC") as GameObject;
     }
 
     protected override void OnStart()
@@ -340,6 +361,7 @@ public class ObjectManager : SingletonMonoBehaviour<ObjectManager>
         base.OnStart();
         GetObjectData();
         SetTVonOption();
+        SetLightMRCOption();
 
     }
 

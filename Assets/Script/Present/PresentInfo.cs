@@ -17,7 +17,8 @@ public class PresentInfo
         Wide,   //?
         Big,    //cake
         Huge,
-        Long_Coke
+        Long_Coke,
+        Fish
     }
     public enum PRESENT_DATA
     {
@@ -80,6 +81,10 @@ public class PresentInfo
             case PRESENT_TYPE.Long_Coke:
                 Size = new Vector3(0.8f, 2.6f, 0.2f);
                 Mass = 1.5f;
+                break;
+            case PRESENT_TYPE.Fish:
+                Size = new Vector3(3.4f, 0.8f, 0.2f);
+                Mass = 2.0f;
                 break;
             default:
                 Size = Vector3.zero;

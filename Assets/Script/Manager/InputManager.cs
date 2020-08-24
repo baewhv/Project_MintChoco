@@ -20,9 +20,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
 
     GameObject optionUI = null;
     Character character;
-    [SerializeField] GameObject[] SpotLight = null;
     bool canSpotLight = true;
-    int SpotLightSelect = 0;
 
     void GetEmoticonInput()
     {
@@ -34,19 +32,19 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         optionUI = obj;
     }
 
-    void SelectLight()
-    {
-        var Data = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "SelectSpotLight");
-        if (bool.Parse(Data))
-        {
+    //void SelectLight()
+    //{
+    //    var Data = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "SelectSpotLight");
+    //    if (bool.Parse(Data))
+    //    {
             
-            SpotLightSelect = 1;
-        }
-        else
-        {
-            SpotLightSelect = 0;
-        }
-    }
+    //        SpotLightSelect = 1;
+    //    }
+    //    else
+    //    {
+    //        SpotLightSelect = 0;
+    //    }
+    //}
 
     override protected void OnStart()
     {
@@ -57,8 +55,6 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         CromakeyMode = KeyCode.Semicolon;
         SwitchWeapon = KeyCode.Tab;
         GetEmoticonInput();
-        SpotLight[0].SetActive(false);
-        SpotLight[1].SetActive(false);
         character = GameObject.Find("Character").GetComponent<Character>();
     }
 
@@ -73,7 +69,8 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         optionUI.SetActive(false);
 
         character.ReplayMovement();
-        SpotLight[SpotLightSelect].SetActive(false);
+        LightManager.Instance.LightOff();
+
         MicManager.Instance.isSpotlightMode = false;
         LoopbackAudio.Instance.isSpotlightMode = false;
         PresentsManager.Instance.DisableSpecPresent();
@@ -113,16 +110,15 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
         }
         if (Input.GetKeyDown(LightKey) && !optionUI.activeSelf && canSpotLight)
         {
-            SelectLight();
-            if (SpotLight[SpotLightSelect].activeSelf)
+            if (LightManager.Instance.IsLightOn())
             {
-                SpotLight[SpotLightSelect].SetActive(false);
+                LightManager.Instance.LightOff();
                 MicManager.Instance.isSpotlightMode = false;
                 LoopbackAudio.Instance.isSpotlightMode = false;
             }
             else
             {
-                SpotLight[SpotLightSelect].SetActive(true);
+                LightManager.Instance.LightOn();
                 MicManager.Instance.isSpotlightMode = true;
                 LoopbackAudio.Instance.isSpotlightMode = true;
             }
@@ -138,7 +134,7 @@ public class InputManager : SingletonMonoBehaviour<InputManager>
             {
                 CloseOption();
                 canSpotLight = false;
-                SpotLight[SpotLightSelect].SetActive(false);
+                LightManager.Instance.LightOff();
                 character.SetChromaKeyMode();
             }
             else
