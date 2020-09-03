@@ -128,6 +128,12 @@ MonoBehaviour:
   startZ: 45
   angle: -40
   rotateSpeed: 0.5
+  TargetObj: {fileID: 0}
+  SelectChangeColor: 0
+  SelectChangeRandomColor: 0
+  TraceLefpTime: 1
+  lightColor: {r: 1, g: 1, b: 1, a: 0.22}
+  ChangeColorTime: 1
 --- !u!1 &2803057110603804648
 GameObject:
   m_ObjectHideFlags: 0
@@ -256,6 +262,12 @@ MonoBehaviour:
   startZ: 2
   angle: -30
   rotateSpeed: 0.7
+  TargetObj: {fileID: 0}
+  SelectChangeColor: 0
+  SelectChangeRandomColor: 0
+  TraceLefpTime: 1
+  lightColor: {r: 1, g: 1, b: 1, a: 0.22}
+  ChangeColorTime: 1
 --- !u!1 &4822827049027582646
 GameObject:
   m_ObjectHideFlags: 0
@@ -384,6 +396,12 @@ MonoBehaviour:
   startZ: -40
   angle: 35
   rotateSpeed: 0.72
+  TargetObj: {fileID: 0}
+  SelectChangeColor: 0
+  SelectChangeRandomColor: 0
+  TraceLefpTime: 1
+  lightColor: {r: 1, g: 1, b: 1, a: 0.22}
+  ChangeColorTime: 1
 --- !u!1 &4822827050033962444
 GameObject:
   m_ObjectHideFlags: 0
@@ -431,6 +449,12 @@ MonoBehaviour:
   startZ: 50
   angle: 30
   rotateSpeed: 0.8
+  TargetObj: {fileID: 0}
+  SelectChangeColor: 0
+  SelectChangeRandomColor: 0
+  TraceLefpTime: 1
+  lightColor: {r: 1, g: 1, b: 1, a: 0.22}
+  ChangeColorTime: 1
 --- !u!1 &4822827050309406164
 GameObject:
   m_ObjectHideFlags: 0
@@ -446,7 +470,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &4822827050309406167
 Transform:
   m_ObjectHideFlags: 0
@@ -515,6 +539,12 @@ MonoBehaviour:
   startZ: -49
   angle: -35
   rotateSpeed: 0.82
+  TargetObj: {fileID: 0}
+  SelectChangeColor: 0
+  SelectChangeRandomColor: 0
+  TraceLefpTime: 1
+  lightColor: {r: 1, g: 1, b: 1, a: 0.22}
+  ChangeColorTime: 1
 --- !u!1 &4822827050484404590
 GameObject:
   m_ObjectHideFlags: 0
@@ -886,3 +916,9 @@ MonoBehaviour:
   startZ: -10
   angle: -32
   rotateSpeed: 0.6
+  TargetObj: {fileID: 0}
+  SelectChangeColor: 0
+  SelectChangeRandomColor: 0
+  TraceLefpTime: 1
+  lightColor: {r: 1, g: 1, b: 1, a: 0.22}
+  ChangeColorTime: 1

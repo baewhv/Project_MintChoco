@@ -6,7 +6,7 @@ public class LightManager : SingletonMonoBehaviour<LightManager>
 {
     int SpotLightSelect = 0;
     bool isLightOn;
-    [SerializeField] string[] PrefabName = null;
+    //[SerializeField] string[] PrefabName = null;
     [SerializeField] GameObject[] SpotLight = null;
     GameObject LightRMC;
 

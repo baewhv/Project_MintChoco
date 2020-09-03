@@ -13,7 +13,7 @@ public class Present : MonoBehaviour
     GameObject SimpleDonateEffect;
     GameObject DonateRayEffect;
     GameObject GoldBar;
-    int speed;
+    //int speed = 0;
     private void OnTriggerEnter(Collider collision)
     {
         if (collision.tag.Equals("DeadLine"))
@@ -139,7 +139,7 @@ public class Present : MonoBehaviour
         DonateRayEffect = effB;
         DonateRayEffect.SetActive(false);
 
-        speed = 0;
+        //speed = 0;
     }
     void Start()
     {

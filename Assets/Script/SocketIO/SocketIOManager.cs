@@ -133,7 +133,7 @@ namespace SocketIO
         void SetWebSocket()
         {
             url = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwipWssAddress");
-            url = "wss://io.mytwip.net/socket.io/?alertbox_key="+ url + "&version=1.1.58&EIO=3&transport=websocket";
+            url = "wss://io.mytwip.net/socket.io/?alertbox_key="+ url + "&version=1.1.59&EIO=3&transport=websocket";
             ws = new WebSocket(url);
             ws.OnOpen += OnOpen;
             ws.OnMessage += OnMessage;

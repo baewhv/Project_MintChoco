@@ -11,7 +11,7 @@ public class EffectManager : SingletonMonoBehaviour<EffectManager>
     GameObject EffectObj;
     GameObject GoldBarObj;
     GameObject EffectPoolObject;
-    [SerializeField] GameObject Certain;
+    [SerializeField] GameObject Certain = null;
 
     int ActiveEffects;
 

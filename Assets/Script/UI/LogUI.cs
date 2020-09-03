@@ -22,7 +22,11 @@ public class LogUI : SingletonMonoBehaviour<LogUI>
     {
         base.OnAwake();
         if (m_Text != null)
+        {
             m_Text.text += "안녕하세요 민초여왕님!" + "\n";
+        }
+        
+
     }
 
     // Update is called once per frame
