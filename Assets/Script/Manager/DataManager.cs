@@ -22,6 +22,7 @@ public class DataManager : SingletonMonoBehaviour<DataManager>
     {
         CheckData(m_OptionData, "TwippyLogAddress", @"C:\Users\YourName\AppData\Roaming\Twippy\userdata");
         CheckData(m_OptionData, "TwipWssAddress", "AAAAAAAAAA");
+        CheckData(m_OptionData, "TwipToken", "");
         CheckData(m_OptionData, "ToonationAddress", "wss://toonation.kr/");
         CheckData(m_OptionData, "SelectSpotLight", "0");
         CheckData(m_OptionData, "UseTwippyTXTDonate", "False");

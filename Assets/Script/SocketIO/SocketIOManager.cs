@@ -21,6 +21,8 @@ namespace SocketIO
         private Decoder decoder;
 
         bool startSocketIOManager;
+        bool checkWSSLocation;
+        bool checkBoxConfig;
 
         int gettingMessages = 0;
 
@@ -36,15 +38,16 @@ namespace SocketIO
         IEnumerator SendPing;
 
         IEnumerator TryReconnect;
-        
+
         protected override void OnAwake()
         {
             base.OnAwake();
             rightConnection = false;
             parser = new Parser();
             decoder = new Decoder();
-            SetWebSocket();
             doReconnect = false;
+            checkWSSLocation = false;
+            checkBoxConfig = false;
             SendPing = SendPing_Base(pingDelay);
             TryReconnect = TryReconnect_Base(reconnectDelay);
             if (debugMethod == null)
@@ -59,14 +62,7 @@ namespace SocketIO
         protected override void OnStart()
         {
             base.OnStart();
-            if (startSocketIOManager)
-            {
-                ws.Connect();
-                if (ws.IsConnected)
-                {
-                    StartCoroutine(SendPing);
-                }
-            }
+            FindWebSocket();
         }
 
         //int testnumA = 0;
@@ -91,20 +87,6 @@ namespace SocketIO
             }
 
             CheckConnection();
-
-            //if (Input.GetKeyDown(KeyCode.Keypad8))
-            //{
-            //    PresentsManager.Instance.AddDonateQueue(testnumA.ToString(), 4000, PresentsManager.DONATE_TYPE.Donate);
-            //    testnumA++;
-            //}
-            //if (Input.GetKeyDown(KeyCode.Keypad9))
-            //{
-            //    if (testnumA > testnumB)
-            //    {
-            //        PresentsManager.Instance.DonateSetNow(testnumB.ToString());
-            //        testnumB++;
-            //    }
-            //}
         }
 
 
@@ -114,26 +96,27 @@ namespace SocketIO
             {
                 return;
             }
-            if (!ws.IsConnected && !doReconnect)
+            if (ws != null)
             {
-                Debug.Log("연결 시도");
-                StopCoroutine(SendPing);
-                SendPing = SendPing_Base(pingDelay);
-                StartCoroutine(TryReconnect);
-            }
-            else if (ws.IsConnected && doReconnect)
-            {
-                doReconnect = false;
-                StopCoroutine(TryReconnect);
-                TryReconnect = TryReconnect_Base(reconnectDelay);
-                StartCoroutine(SendPing);
+                if (!ws.IsConnected && !doReconnect)
+                {
+                    Debug.Log("연결 시도");
+                    StopCoroutine(SendPing);
+                    SendPing = SendPing_Base(pingDelay);
+                    StartCoroutine(TryReconnect);
+                }
+                else if (ws.IsConnected && doReconnect)
+                {
+                    doReconnect = false;
+                    StopCoroutine(TryReconnect);
+                    TryReconnect = TryReconnect_Base(reconnectDelay);
+                    StartCoroutine(SendPing);
+                }
             }
         }
 
         void SetWebSocket()
         {
-            url = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwipWssAddress");
-            url = "wss://io.mytwip.net/socket.io/?alertbox_key="+ url + "&version=1.1.59&EIO=3&transport=websocket";
             ws = new WebSocket(url);
             ws.OnOpen += OnOpen;
             ws.OnMessage += OnMessage;
@@ -141,16 +124,71 @@ namespace SocketIO
             ws.OnClose += OnClose;
         }
 
+        TwipKeyGetter getter = new TwipKeyGetter();
+
+        void FindWebSocket()
+        {
+            var twipKey = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwipWssAddress");
+            var twipToken = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "TwipToken");
+            string location = "https://twip.kr/widgets/alertbox/" + twipKey;
+            getter.WssHandler += SetWssData;
+            getter.AlertBoxHandler += SetAlertBoxConfig;
+            StartCoroutine(getter.GetWss(location, twipToken));
+            StartCoroutine(getter.GetAlertBoxConfig(location));
+
+        }
+
+        void SetWssData(string _data)
+        {
+            if (_data != "")
+            {
+                url = _data;
+                checkWSSLocation = true;
+                CheckPrefaredWS();
+            }
+        }
+
+        void SetAlertBoxConfig(string _data)
+        {
+            if (_data != "")
+            {
+                //얼럿박스 설정 성공
+                SocketIOEvent ev = new SocketIOEvent("alertbox config", new JSONObject(_data));
+                donateQueue.Enqueue(ev);
+                checkBoxConfig = true;
+                CheckPrefaredWS();
+            }
+        }
+
+        void CheckPrefaredWS()
+        {
+            if (checkWSSLocation && checkBoxConfig)
+            {
+                SetWebSocket();
+                ws.Connect();
+                if (ws.IsConnected)
+                {
+                    StartCoroutine(SendPing);
+                }
+            }
+        }
+
+
         public void ResetWebSocket()
         {
             CloseWebSocket();
             var _useSocketData = DataManager.Instance.GetValues(DataManager.Instance.m_OptionData, "UseTwipSocketDonate");
             startSocketIOManager = bool.Parse(_useSocketData);
+            checkWSSLocation = false;
+            checkBoxConfig = false;
+            rightConnection = false;
+            FindWebSocket();
         }
 
         void CloseWebSocket()
         {
             ws.Close();
+            Debug.Log(ws.IsConnected);
         }
 
         IEnumerator SendPing_Base(float PingDelay)
@@ -174,8 +212,7 @@ namespace SocketIO
             {
                 Blinker.Instance.SetColor(Blinker.BLINK_TYPE.Error);
                 yield return new WaitForSeconds(ReconnectDelay);
-                SetWebSocket();
-                ws.Connect();
+                CheckPrefaredWS();
                 LogUI.Instance.SetText("소켓서버와 다시 연결중입니다.");
             }
             LogUI.Instance.SetText("연결되었습니다.");
@@ -201,21 +238,16 @@ namespace SocketIO
                 {
                     SocketIOEvent ev = parser.Parse(packet.json);
                     //Debug.Log(ev.ToString());
-                    //Debug.Log(ev.name);
-                    if (rightConnection)
-                    {
-                        Debug.Log(ev.ToString());
-                    }
-                    if (ev.name == "alertbox config" || ev.name == "new donate" || ev.name == "now" ||
+                    if (ev.name == "new donate" || ev.name == "now" ||
                         ev.name == "new sub" || ev.name == "new cheer" || ev.name == "new hosting" ||
-                        ev.name == "media:playing" || ev.name == "media:started")
+                        ev.name == "media:playing" || ev.name == "media:started" || ev.name == "TOKEN_EXPIRED" || ev.name == "TOKEN_NOT_FOUND")
                     {
                         lock (donateQueueLock)
                         {
                             try
                             {
                                 donateQueue.Enqueue(ev);
-                                //Debug.Log("파싱 성공" + ev.ToString());
+
                             }
                             catch (Exception ex)
                             {
@@ -267,9 +299,9 @@ namespace SocketIO
 
         private void EmitDonate(SocketIOEvent ev)
         {
+            //Debug.Log(ev.ToString());
             gettingMessages++;
             string _id = "";
-            //Debug.Log(ev.name);
             switch (ev.name)
             {
                 case "new donate":
@@ -310,7 +342,9 @@ namespace SocketIO
                     }
                     break;
                 case "alertbox config":
-                    if(ev.data.HasField("name"))
+                    //Debug.Log(ev.data[0].ToString());
+                    //Debug.Log(ev.data.keys.Count);
+                    if (ev.data.HasField("name"))
                     {
                         string name = "";
                         ev.data.GetField(ref name, "name");
@@ -382,10 +416,16 @@ namespace SocketIO
                     PresentsManager.Instance.DonateSetNow("media", false);
                     break;
             }
+            if(ev.name == "TOKEN_EXPIRED" || ev.name == "TOKEN_NOT_FOUND")
+            {
+                LogUI.Instance.SetText("유효하지 않은 토큰입니다.");
+                CloseWebSocket();
+            }
         }
 
         private void OnApplicationQuit()
         {
+            Debug.Log("quit");
             CloseWebSocket();
         }
     }

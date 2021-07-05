@@ -37,7 +37,7 @@ public class Character : MonoBehaviour
     bool canJump;
     bool canMove; 
     bool equipWeapon;
-    bool canEmoticon;
+    bool canEmoticon; 
     bool canBlink;
     bool isBurrow;
     bool canBurrow;
@@ -218,7 +218,6 @@ public class Character : MonoBehaviour
     }
     void SetFlip()
     {
-        
         Weapon.transform.localPosition = new Vector3(-Weapon.transform.localPosition.x, Weapon.transform.localPosition.y, 0.0f);
         Weapon.transform.localRotation = new Quaternion(0, 0, -Weapon.transform.localRotation.z, Weapon.transform.localRotation.w);
         m_Eye.gameObject.transform.localPosition = new Vector3(-m_Eye.gameObject.transform.localPosition.x, m_Eye.gameObject.transform.localPosition.y, 0.0f);
@@ -366,6 +365,7 @@ public class Character : MonoBehaviour
 
     void OnTriggerEnter(Collider collision)     //점프 후 착륙 함수
     {
+        
         if (collision.tag.Equals("Wall") && isDown)
         {
             isDown = false;

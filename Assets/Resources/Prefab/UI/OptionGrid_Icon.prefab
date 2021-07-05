@@ -12,8 +12,9 @@ GameObject:
   - component: {fileID: 4427106567379682555}
   - component: {fileID: 4302761492916147079}
   - component: {fileID: 6928906491992907369}
+  - component: {fileID: 3759298386548028874}
   m_Layer: 5
-  m_Name: Furniture_Icon
+  m_Name: OptionGrid_Icon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -105,6 +106,36 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Icon: {fileID: 3669935807084529971}
   LinkedObject: {fileID: 0}
+  PresentInfo:
+    name: 
+    m_PresentType: 0
+    m_sprite: {fileID: 0}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0, y: 0, z: 0}
+    m_PresentData: 0
+--- !u!114 &3759298386548028874
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4209465010228586413}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 37dd08f3aa4a7f14a965cf2b7bf0820a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  Icon: {fileID: 0}
+  LinkedObject: {fileID: 0}
+  PresentInfo:
+    name: 
+    m_PresentType: 0
+    m_sprite: {fileID: 0}
+    m_SpritePos: {x: 0, y: 0, z: 0}
+    m_SpriteRot: {x: 0, y: 0, z: 0}
+    m_SpriteSize: {x: 0, y: 0, z: 0}
+    m_PresentData: 0
 --- !u!1 &5516311765296219238
 GameObject:
   m_ObjectHideFlags: 0

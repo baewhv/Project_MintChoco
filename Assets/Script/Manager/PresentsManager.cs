@@ -447,6 +447,10 @@ public class PresentsManager : SingletonMonoBehaviour<PresentsManager>
             {
                 CreatePresentBundle(1000000);
             }
+            else if (Input.GetKeyDown(KeyCode.Keypad9))
+            {
+                CreatePresentBundle(1003);
+            }
         }
 #else
         if (testDropPresent && Input.GetKey(KeyCode.LeftControl))

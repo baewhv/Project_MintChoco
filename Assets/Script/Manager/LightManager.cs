@@ -79,7 +79,7 @@ public class LightManager : SingletonMonoBehaviour<LightManager>
 
         if (bool.TryParse(Data, out checkBool)) //여왕님 정상적인 플레이 후 제거!
         {
-            Debug.Log("LoadSuccess : bool");
+            //Debug.Log("LoadSuccess : bool");
             if (checkBool)
             {
                 
@@ -92,7 +92,7 @@ public class LightManager : SingletonMonoBehaviour<LightManager>
         }
         else if(int.TryParse(Data, out checkInt))
         {
-            Debug.Log("LoadSuccess : int");
+            //Debug.Log("LoadSuccess : int");
             SpotLightSelect = checkInt;
         }
     }
