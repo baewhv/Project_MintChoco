@@ -94,7 +94,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
             _audio.loop = true;
             while (!(Microphone.GetPosition(null) > 0))
             {
-
+                if (Microphone.GetPosition(null) == 0) break;
             }
             _audio.Play();
             _samples = new float[QSamples];
@@ -316,7 +316,7 @@ public class MicManager : SingletonMonoBehaviour<MicManager>
 
                 while (!(Microphone.GetPosition(null) > 0))
                 {
-
+                    if (Microphone.GetPosition(null) == 0) break;
                 }
                 src.Play();
             }
