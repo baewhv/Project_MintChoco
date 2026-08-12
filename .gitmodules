@@ -1,0 +1,3 @@
+[submodule "Assets/_Imports"]
+	path = Assets/_Imports
+	url = http://vishas.git:3001/bae_jm/MintChoco_ResourceRepo.git
